@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/pages/video_edit_page.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
-final activewidgetsProvider =
-    StateProvider<List<Widget>>((ref) => [Text('data'), Text('data')]);
+// class ActiveWidgetList extends ChangeNotifier {
+//   List<Widget> _list = [];
+
+//   List<Widget> get list => _list;
+
+//   void addItem(Widget item) {
+//     _list.add(item);
+//     notifyListeners();
+//   }
+// }
+
+// // class AllWidgetList extends ChangeNotifier {
+// //   final List<int> _list = [];
+
+// //   List<int> get list => _list;
+
+// //   // void addItem(int item) {
+// //   //   _list.add(item);
+// //   //   notifyListeners();
+// //   // }
+// // }
+
 void main() {
   runApp(const MyApp());
 }
@@ -21,9 +40,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ProviderScope(
-        child: VideoEditPage(),
-      ),
+      home: VideoEditPage(),
     );
   }
 }

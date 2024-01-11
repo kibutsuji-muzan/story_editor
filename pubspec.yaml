@@ -41,8 +41,7 @@ dependencies:
   flutter_svg: ^2.0.9
   pinch_scale: ^0.0.4
   matrix_gesture_detector: ^0.2.0-nullsafety.1
-  flutter_riverpod: ^2.4.9
-  riverpod_annotation: ^2.3.3
+  provider: ^6.1.1
 
 dev_dependencies:
   flutter_test:

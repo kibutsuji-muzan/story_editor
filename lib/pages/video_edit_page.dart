@@ -1,43 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_edit_story/main.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:matrix_gesture_detector/matrix_gesture_detector.dart';
 import 'package:video_player/video_player.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 enum _grp { Yes, No }
 
-final allwidgetsProvider = StateProvider<List<Widget>>(
-  (ref) => [
-    const _PollsWidget(),
-    SvgPicture.asset('assets/sticker.svg', width: 100),
-  ],
-);
-// List<Widget> _widgets = [
-//   const _PollsWidget(),
-//   SvgPicture.asset('assets/sticker.svg', width: 100),
-// ];
+List<Widget> _allWidgetsList = [
+  _PollsWidget(),
+  SvgPicture.asset(
+    'assets/sticker.svg',
+    width: 100,
+  ),
+];
 
-class VideoEditPage extends ConsumerStatefulWidget {
+class VideoEditPage extends StatefulWidget {
   const VideoEditPage({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _VideoEditPageState();
+  State<StatefulWidget> createState() => _VideoEditPageState();
 }
 
-class _VideoEditPageState extends ConsumerState<VideoEditPage> {
+class _VideoEditPageState extends State<VideoEditPage> {
   late VideoPlayerController _controller;
   late Future<void> _initController;
   bool _audio = true;
+
+  List<Widget> _localactivelist = [];
+
+  void refresh(Widget item) {
+    setState(() {
+      _localactivelist.add(item);
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.asset('assets/video.mp4');
-    // _initController = _controller.initialize().then((_) => _controller.play());
-    _initController =
-        _controller.initialize().then((_) => _controller.setLooping(true));
-    // _controller.setLooping(true);
+    _initController = _controller.initialize().then((_) => _controller.play());
+    _controller.setLooping(true);
   }
 
   @override
@@ -48,10 +49,6 @@ class _VideoEditPageState extends ConsumerState<VideoEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(
-      activewidgetsProvider,
-      (previous, next) => (print('update')),
-    );
     return Scaffold(
       body: Stack(
         children: [
@@ -87,7 +84,14 @@ class _VideoEditPageState extends ConsumerState<VideoEditPage> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () => _showBottomModal(context),
+                      onPressed: () => showModalBottomSheet(
+                        context: context,
+                        backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+                        isScrollControlled: true,
+                        builder: (context) {
+                          return _scrollModal(notifyParent: refresh);
+                        },
+                      ),
                       splashColor: Colors.white,
                       icon: const Icon(
                         Icons.emoji_symbols_rounded,
@@ -99,7 +103,7 @@ class _VideoEditPageState extends ConsumerState<VideoEditPage> {
               ),
             ),
           ),
-          for (Widget elem in ref.watch(activewidgetsProvider))
+          for (Widget elem in _localactivelist)
             _widget(
               widget: elem,
             ),
@@ -242,25 +246,15 @@ class __PollsWidgetState extends State<_PollsWidget> {
   }
 }
 
-Future _showBottomModal(BuildContext context) {
-  return showModalBottomSheet(
-    context: context,
-    backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
-    isScrollControlled: true,
-    builder: (context) {
-      return ProviderScope(child: _scrollModal());
-    },
-  );
-}
-
-class _scrollModal extends ConsumerStatefulWidget {
-  const _scrollModal({super.key});
+class _scrollModal extends StatefulWidget {
+  Function notifyParent;
+  _scrollModal({super.key, required this.notifyParent});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _scrollModalState();
+  State<StatefulWidget> createState() => _scrollModalState();
 }
 
-class _scrollModalState extends ConsumerState<_scrollModal> {
+class _scrollModalState extends State<_scrollModal> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -294,23 +288,19 @@ class _scrollModalState extends ConsumerState<_scrollModal> {
                 ),
               ),
               SliverGrid.builder(
-                itemCount: ref.watch(allwidgetsProvider).length,
+                itemCount: _allWidgetsList.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      ref
-                          .read(activewidgetsProvider.notifier)
-                          .state
-                          .add(ref.watch(allwidgetsProvider)[index]);
-
-                      print(ref.watch(activewidgetsProvider));
+                      widget.notifyParent(_allWidgetsList[index]);
+                      Navigator.of(context).pop(context);
                     },
                     child: GridTile(
                       child: Center(
-                        child: ref.read(allwidgetsProvider)[index],
+                        child: _allWidgetsList[index],
                       ),
                     ),
                   );

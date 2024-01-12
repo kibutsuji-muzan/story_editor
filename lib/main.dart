@@ -1,28 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/pages/video_edit_page.dart';
-import 'package:provider/provider.dart';
-
-// class ActiveWidgetList extends ChangeNotifier {
-//   List<Widget> _list = [];
-
-//   List<Widget> get list => _list;
-
-//   void addItem(Widget item) {
-//     _list.add(item);
-//     notifyListeners();
-//   }
-// }
-
-// // class AllWidgetList extends ChangeNotifier {
-// //   final List<int> _list = [];
-
-// //   List<int> get list => _list;
-
-// //   // void addItem(int item) {
-// //   //   _list.add(item);
-// //   //   notifyListeners();
-// //   // }
-// // }
 
 void main() {
   runApp(const MyApp());

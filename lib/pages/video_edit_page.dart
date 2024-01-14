@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
 import 'package:flutter_edit_story/var.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_edit_story/components/ScrollModal.dart';
 import 'package:flutter_edit_story/widgets/Widget.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_edit_story/API/saavan.dart' as savaanApi;
 
 class VideoEditPage extends StatefulWidget {
   const VideoEditPage({super.key});
@@ -19,6 +23,15 @@ class _VideoEditPageState extends State<VideoEditPage> {
   bool _deleteButton = false;
   bool _deleteButtonActive = false;
   final List<Widget> _localactivelist = [];
+  List<Song> songs = [];
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset('assets/video.mp4');
+    _initController = _controller.initialize().then((_) => _controller.pause());
+    _controller.setLooping(true);
+    get_music();
+  }
 
   void refresh(Widget item) {
     setState(() {
@@ -27,12 +40,21 @@ class _VideoEditPageState extends State<VideoEditPage> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.asset('assets/video.mp4');
-    _initController = _controller.initialize().then((_) => _controller.play());
-    _controller.setLooping(true);
+  void get_music() async {
+    print('here');
+    List res = await savaanApi.topSongs();
+
+    for (var song in res) {
+      songs.add(
+        Song(
+          title: song['title'],
+          encrypted_media_url: song['more_info']['encrypted_media_url'],
+          thumbnail: song['image'],
+          subtitle: song['subtitle'],
+        ),
+      );
+    }
+    print(songs[0]);
   }
 
   @override
@@ -97,7 +119,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 50),
                     child: Container(
-                      padding: EdgeInsets.all(22),
+                      padding: const EdgeInsets.all(22),
                       decoration: BoxDecoration(
                         color: (_deleteButtonActive)
                             ? const Color.fromARGB(174, 239, 83, 80)
@@ -169,7 +191,10 @@ class _VideoEditPageState extends State<VideoEditPage> {
                         backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
                         isScrollControlled: true,
                         builder: (context) {
-                          return MusicModal();
+                          return ChangeNotifierProvider<PlayingSong>(
+                            create: (context) => PlayingSong(),
+                            child: MusicModal(songs: songs),
+                          );
                         },
                       ),
                       splashColor: Colors.white,

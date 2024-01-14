@@ -27,3 +27,53 @@ List allWidgetsList = [
     width: 100,
   ),
 ];
+
+class Song {
+  final String title;
+  final String encrypted_media_url;
+  final String thumbnail;
+  final String subtitle;
+
+  const Song({
+    required this.title,
+    required this.encrypted_media_url,
+    required this.thumbnail,
+    required this.subtitle,
+  });
+
+  factory Song.fromJson(Map<String, dynamic> json) {
+    return switch (json) {
+      {
+        'title': String title,
+        'encrypted_media_url': String encrypted_media_url,
+        'thumbnail': String thumbnail,
+        'subtitle': String subtitle,
+      } =>
+        Song(
+          title: title,
+          encrypted_media_url: encrypted_media_url,
+          thumbnail: thumbnail,
+          subtitle: subtitle,
+        ),
+      _ => throw const FormatException('Failed to load Song.'),
+    };
+  }
+}
+
+class PlayingSong with ChangeNotifier {
+  String? _song = null;
+  bool _playing = false;
+
+  String? get song => _song;
+  bool get playing => _playing;
+
+  void setPlayin() {
+    _playing = !_playing;
+    notifyListeners();
+  }
+
+  void setSong(String s) {
+    _song = s;
+    notifyListeners();
+  }
+}

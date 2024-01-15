@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_edit_story/pages/test.dart';
 import 'package:flutter_edit_story/pages/video_edit_page.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_edit_story/var.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade700),
         useMaterial3: true,
       ),
-      home: VideoEditPage(),
+      home: const VideoEditPage(),
     );
   }
 }

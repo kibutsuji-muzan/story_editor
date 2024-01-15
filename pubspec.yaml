@@ -43,6 +43,7 @@ dependencies:
   just_audio: ^0.9.36
   youtube_explode_dart: ^2.0.4
   provider: ^6.1.1
+  jiosaavn: ^0.1.0
   
 dev_dependencies:
   flutter_test:

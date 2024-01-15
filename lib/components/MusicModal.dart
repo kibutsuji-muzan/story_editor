@@ -1,27 +1,90 @@
 import 'dart:convert';
-
-import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_edit_story/var.dart';
+import 'package:flutter_edit_story/widgets/MusicWidget.dart';
+
+import 'package:jiosaavn/jiosaavn.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:provider/provider.dart';
 
 class MusicModal extends StatefulWidget {
+  Function notifyParent;
+
   List<Song> songs;
-  MusicModal({super.key, required this.songs});
+  MusicModal({super.key, required this.songs, required this.notifyParent});
 
   @override
   State<StatefulWidget> createState() => _MusicModalState();
 }
 
 class _MusicModalState extends State<MusicModal> {
+  final AudioPlayer _player = AudioPlayer();
   String? _nowplaying;
+  List<Song> _searched = [];
+  final TextEditingController _controller = TextEditingController();
+  JioSaavnClient jiosaavan = JioSaavnClient();
 
-  void setnowplaying(String mediaKey) {
+  void setnowplaying(String mediaKey, BuildContext ctx, String url) {
     setState(() {
       _nowplaying = mediaKey;
     });
+    _playSong(ctx, url);
+  }
+
+  void _playSong(var context, String url) async {
+    if (Provider.of<PlayingSong>(context, listen: false).song == null) {
+      Provider.of<PlayingSong>(context, listen: false).setSong(_nowplaying!);
+    }
+    if (Provider.of<PlayingSong>(context, listen: false).song == _nowplaying) {
+      if (!Provider.of<PlayingSong>(context, listen: false).playing) {
+        Provider.of<PlayingSong>(context, listen: false).setPlayin();
+        await _player.setUrl(url);
+        await _player.play();
+      } else {
+        Provider.of<PlayingSong>(context, listen: false).setPlayin();
+        await _player.pause();
+      }
+    }
+    if ((Provider.of<PlayingSong>(context, listen: false).song !=
+        _nowplaying)) {
+      Provider.of<PlayingSong>(context, listen: false).setSong(_nowplaying!);
+      Provider.of<PlayingSong>(context, listen: false).setPlayin();
+      if (!Provider.of<PlayingSong>(context, listen: false).playing) {
+        Provider.of<PlayingSong>(context, listen: false).setPlayin();
+        await _player.setUrl(url);
+        await _player.play();
+      }
+    }
+  }
+
+  Future<void> fetch_song(String query) async {
+    var res = await jiosaavan.search.songs(query);
+    for (var song in res.results) {
+      setState(() {
+        _searched.add(
+          Song(
+            encrypted_media_url: song.downloadUrl![0].link,
+            thumbnail: song.image![0].link,
+            title: song.name!,
+            subtitle: song.primaryArtists,
+          ),
+        );
+      });
+    }
+    return;
+  }
+
+  void addwidget(Widget item) {
+    widget.notifyParent(item);
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
   }
 
   @override
@@ -58,6 +121,19 @@ class _MusicModalState extends State<MusicModal> {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   height: MediaQuery.of(context).size.height * 0.045,
                   child: TextField(
+                    controller: _controller,
+                    onChanged: (value) async {
+                      fetch_song(value);
+                      if (_searched.isNotEmpty) {
+                        _searched.clear();
+                      }
+                      if (Provider.of<PlayingSong>(context, listen: false)
+                          .playing) {
+                        Provider.of<PlayingSong>(context, listen: false)
+                            .setPlayin();
+                        _player.stop();
+                      }
+                    },
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.black12,
@@ -89,16 +165,26 @@ class _MusicModalState extends State<MusicModal> {
                     controller: scrollController,
                     slivers: [
                       SliverList.builder(
-                        itemCount: widget.songs.length,
+                        itemCount: _searched.isEmpty
+                            ? widget.songs.length
+                            : _searched.length,
                         itemBuilder: (context, index) {
                           return SongWidget(
+                            addwidget: addwidget,
                             nowplaying: _nowplaying,
-                            title: widget.songs[index].title,
-                            thumbnail: widget.songs[index].thumbnail,
-                            subtitle: widget.songs[index].subtitle,
+                            title: _searched.isEmpty
+                                ? widget.songs[index].title
+                                : _searched[index].title,
+                            thumbnail: _searched.isEmpty
+                                ? widget.songs[index].thumbnail
+                                : _searched[index].thumbnail,
+                            subtitle: _searched.isEmpty
+                                ? widget.songs[index].subtitle
+                                : _searched[index].subtitle,
                             setplaying: setnowplaying,
-                            songVideoId:
-                                widget.songs[index].encrypted_media_url,
+                            songVideoId: _searched.isEmpty
+                                ? widget.songs[index].encrypted_media_url
+                                : _searched[index].encrypted_media_url,
                           );
                         },
                       ),
@@ -121,6 +207,7 @@ class SongWidget extends StatefulWidget {
   String songVideoId;
   String? nowplaying;
   Function setplaying;
+  Function addwidget;
   SongWidget({
     super.key,
     required this.title,
@@ -129,135 +216,145 @@ class SongWidget extends StatefulWidget {
     required this.songVideoId,
     required this.nowplaying,
     required this.setplaying,
+    required this.addwidget,
   });
 
   @override
   State<SongWidget> createState() => _SongWidgetState();
 }
 
+// 04316b5bebmshf8cf862f74e9ee0p1d9076jsne54e53336856
+// 20b650b84amsh0cd2099e0175fbdp1f2bcfjsn07ac8174ebe5
 class _SongWidgetState extends State<SongWidget> {
-  bool _playing = false;
-  final AudioPlayer player = AudioPlayer();
-  Future<String> _getUrl() async {
-    String url;
-    var res = await http.post(
-      Uri.https("jio-saavan-unofficial.p.rapidapi.com", "/getsong"),
-      headers: {
-        'content-type': 'application/json',
-        'X-RapidAPI-Key': '04316b5bebmshf8cf862f74e9ee0p1d9076jsne54e53336856',
-        'X-RapidAPI-Host': 'jio-saavan-unofficial.p.rapidapi.com'
-      },
-      body: jsonEncode({
-        "encrypted_media_url": widget.songVideoId,
-      }),
-    );
-    url = jsonDecode(res.body)['results'][0]['96_kbps'];
-    return url;
-  }
-
-  void _playSong(var context) async {
-    String url =
-        'https://aac.saavncdn.com/410/89df395f63b3b0a409a56c0417b04299_96.mp4';
-    Provider.of<PlayingSong>(context, listen: false)
-        .setSong(widget.songVideoId);
-
-    if (context.watch<PlayingSong>().song == null) {
-      await player.setUrl(url);
-      await player.play();
-    } else if (context.watch<PlayingSong>().song == widget.songVideoId) {
-      Provider.of<PlayingSong>(context, listen: false)
-          .setSong(widget.songVideoId);
-      if (!context.watch<PlayingSong>().playing) {
-        await player.setUrl(url);
-        await player.play();
-      } else {
-        await player.pause();
-      }
-    } else {
-      Provider.of<PlayingSong>(context, listen: false)
-          .setSong(widget.songVideoId);
-    }
-    // String url = await _getUrl();
-  }
-
   @override
   void initState() {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    player.dispose();
+  Future<void> sendNotif() async {
+    String url;
+    if (!widget.songVideoId.contains('https://')) {
+      var res = await http.post(
+        Uri.https("jio-saavan-unofficial.p.rapidapi.com", "/getsong"),
+        headers: {
+          'content-type': 'application/json',
+          'X-RapidAPI-Key':
+              '20b650b84amsh0cd2099e0175fbdp1f2bcfjsn07ac8174ebe5',
+          'X-RapidAPI-Host': 'jio-saavan-unofficial.p.rapidapi.com'
+        },
+        body: jsonEncode({
+          "encrypted_media_url": widget.songVideoId,
+        }),
+      );
+      url = jsonDecode(res.body)['results'][0]['96_kbps'];
+    } else {
+      url = widget.songVideoId;
+    }
+    widget.addwidget(MusicWidget(
+        url: url,
+        title: widget.title,
+        thumbnail: widget.thumbnail,
+        subtitle: widget.subtitle));
+  }
+
+  Future<void> _getUrl(BuildContext ctx) async {
+    String url;
+    if (!widget.songVideoId.contains('https://')) {
+      var res = await http.post(
+        Uri.https("jio-saavan-unofficial.p.rapidapi.com", "/getsong"),
+        headers: {
+          'content-type': 'application/json',
+          'X-RapidAPI-Key':
+              '20b650b84amsh0cd2099e0175fbdp1f2bcfjsn07ac8174ebe5',
+          'X-RapidAPI-Host': 'jio-saavan-unofficial.p.rapidapi.com'
+        },
+        body: jsonEncode({
+          "encrypted_media_url": widget.songVideoId,
+        }),
+      );
+      url = jsonDecode(res.body)['results'][0]['96_kbps'];
+    } else {
+      url = widget.songVideoId;
+    }
+
+    // ignore: use_build_context_synchronously
+    widget.setplaying(widget.songVideoId, ctx, url);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      height: MediaQuery.of(context).size.height * 0.06,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: SizedBox(
-              width: 50,
-              height: 50,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Image.network(widget.thumbnail, fit: BoxFit.scaleDown),
-                  if ((context.watch<PlayingSong>().playing) &&
-                      (context.watch<PlayingSong>().song == widget.songVideoId))
-                    Image.asset('assets/music2.gif'),
-                ],
+    return GestureDetector(
+      onTap: () {
+        sendNotif();
+        Navigator.of(context).pop();
+      },
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        height: MediaQuery.of(context).size.height * 0.06,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.network(widget.thumbnail, fit: BoxFit.scaleDown),
+                    if ((context.watch<PlayingSong>().playing) &&
+                        (context.watch<PlayingSong>().song ==
+                            widget.songVideoId))
+                      Image.asset('assets/music2.gif'),
+                  ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 2,
-                horizontal: 12,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    context.watch<PlayingSong>().song.toString(),
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 2,
+                  horizontal: 12,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ),
-                  Text(
-                    widget.subtitle,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                    Text(
+                      widget.subtitle,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            child: IconButton(
-              onPressed: () {
-                _playSong(context);
-              },
-              icon: ((context.watch<PlayingSong>().playing) &&
-                      (context.watch<PlayingSong>().song == widget.songVideoId))
-                  ? const Icon(Icons.pause_circle_outline_rounded)
-                  : const Icon(Icons.play_circle_outline_rounded),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: IconButton(
+                onPressed: () {
+                  _getUrl(context);
+                },
+                icon: ((context.watch<PlayingSong>().playing) &&
+                        (context.watch<PlayingSong>().song ==
+                            widget.songVideoId))
+                    ? const Icon(Icons.stop_circle_rounded)
+                    : const Icon(Icons.play_circle_rounded),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

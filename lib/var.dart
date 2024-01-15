@@ -15,6 +15,8 @@ chooseWidget(Widget item) {
         'assets/sticker.svg',
         width: 100,
       );
+    case MusicWidget():
+      return item;
     default:
       return new Text('hello');
   }
@@ -77,3 +79,5 @@ class PlayingSong with ChangeNotifier {
     notifyListeners();
   }
 }
+
+class PlayerWidget with ChangeNotifier {}

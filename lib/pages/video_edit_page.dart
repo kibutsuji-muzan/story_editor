@@ -1,12 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
 import 'package:flutter_edit_story/var.dart';
+import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_edit_story/components/ScrollModal.dart';
 import 'package:flutter_edit_story/widgets/Widget.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_edit_story/API/saavan.dart' as savaanApi;
 
 class VideoEditPage extends StatefulWidget {
@@ -34,14 +33,17 @@ class _VideoEditPageState extends State<VideoEditPage> {
   }
 
   void refresh(Widget item) {
+    for (var i in _localactivelist) {
+      if (i.key == item.key) {
+        _localactivelist.remove(i);
+      }
+    }
     setState(() {
       _localactivelist.add(chooseWidget(item));
-      print(_localactivelist);
     });
   }
 
   void get_music() async {
-    print('here');
     List res = await savaanApi.topSongs();
 
     for (var song in res) {
@@ -54,7 +56,6 @@ class _VideoEditPageState extends State<VideoEditPage> {
         ),
       );
     }
-    print(songs[0]);
   }
 
   @override
@@ -193,7 +194,8 @@ class _VideoEditPageState extends State<VideoEditPage> {
                         builder: (context) {
                           return ChangeNotifierProvider<PlayingSong>(
                             create: (context) => PlayingSong(),
-                            child: MusicModal(songs: songs),
+                            child:
+                                MusicModal(songs: songs, notifyParent: refresh),
                           );
                         },
                       ),

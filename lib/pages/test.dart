@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:matrix_gesture_detector/matrix_gesture_detector.dart';
+import 'package:jiosaavn/jiosaavn.dart';
 
 final ValueNotifier<Matrix4> notifier = ValueNotifier(Matrix4.identity());
 
@@ -12,6 +13,7 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
+  JioSaavnClient jiosaavan = JioSaavnClient();
   bool _btn = false;
   @override
   Widget build(BuildContext context) {
@@ -21,10 +23,9 @@ class _TestPageState extends State<TestPage> {
         children: [
           _widget(onDragEnd: () {}, onDragStart: () {}),
           ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _btn = !_btn;
-              });
+            onPressed: () async {
+              // var res = await jiosaavan.search.dio;
+              // print(res.results[0].downloadUrl![0].link);
             },
             child: const Text('Press Me!'),
           )

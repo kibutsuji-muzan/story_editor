@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
 import 'package:flutter_edit_story/var.dart';
-import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_edit_story/components/ScrollModal.dart';
@@ -49,13 +48,14 @@ class _VideoEditPageState extends State<VideoEditPage> {
     for (var song in res) {
       songs.add(
         Song(
+          songId: song['id'],
           title: song['title'],
-          encrypted_media_url: song['more_info']['encrypted_media_url'],
           thumbnail: song['image'],
           subtitle: song['subtitle'],
         ),
       );
     }
+    print(res[0]);
   }
 
   @override

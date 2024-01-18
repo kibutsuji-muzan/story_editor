@@ -6,6 +6,7 @@ import 'package:easy_audio_trimmer/easy_audio_trimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 
 class MusicTestComponent extends StatefulWidget {
   const MusicTestComponent({super.key});
@@ -20,10 +21,9 @@ class _MusicTestComponentState extends State<MusicTestComponent> {
   double _startValue = 0.0;
   double _endValue = 0.0;
 
-  bool _isPlaying = false;
+  bool _isPlaying = true;
   bool _progressVisibility = false;
   bool isLoading = true;
-  String _name = 'audio.mp3';
   late File _file;
 
   @override
@@ -33,35 +33,37 @@ class _MusicTestComponentState extends State<MusicTestComponent> {
   }
 
   Future<void> loadAndSaveFile() async {
-    // Load the file from assets as a byte stream
-    ByteData data = await rootBundle.load('assets/$_name');
-    List<int> bytes = data.buffer.asUint8List();
-
-    // Get the app's temporary directory
+    var res = await http.get(
+      Uri.parse(
+          'https://aac.saavncdn.com/773/6e69a112de89c7655116dcf400019f9c_12.mp4'),
+    );
     Directory tempDir = await getTemporaryDirectory();
-
-    // Create a temporary file
-    File tempFile = File('${tempDir.path}/$_name');
-
-    // Write the byte stream to the temporary file
-    await tempFile.writeAsBytes(bytes);
-
+    String filename = '${tempDir.path}/audio.mp4';
+    File file = File(filename);
+    await file.writeAsBytes(res.bodyBytes);
     setState(() {
-      _file = tempFile;
+      _file = file;
     });
-
     _loadAudio();
-    // Now, you can use tempFile to access the file on the device's file system
-    print('File saved to: ${tempFile}');
   }
 
   void _loadAudio() async {
     setState(() {
       isLoading = true;
     });
-    await _trimmer.loadAudio(audioFile: _file);
+
+    await _trimmer.loadAudio(audioFile: _file).then((value) => _trimmerplay());
+
     setState(() {
       isLoading = false;
+    });
+  }
+
+  Future<void> _trimmerplay() async {
+    bool _playback = await _trimmer.audioPlaybackControl(
+        startValue: _startValue, endValue: _endValue);
+    setState(() {
+      _isPlaying = _playback;
     });
   }
 
@@ -107,64 +109,71 @@ class _MusicTestComponentState extends State<MusicTestComponent> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed:
-                          _progressVisibility ? null : () => _saveAudio(),
+                      onPressed: () {
+                        print('$_startValue , $_endValue');
+                      },
+                      // _progressVisibility ? null : () => _saveAudio(),
                       child: const Text("SAVE"),
                     ),
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TrimViewer(
-                          trimmer: _trimmer,
-                          viewerHeight: 50,
-                          maxAudioLength: const Duration(seconds: 50),
-                          viewerWidth: MediaQuery.of(context).size.width,
-                          durationStyle: DurationStyle.FORMAT_MM_SS,
-                          backgroundColor: Colors.white,
-                          barColor: Colors.black12,
-                          durationTextStyle:
-                              TextStyle(color: Theme.of(context).primaryColor),
-                          allowAudioSelection: true,
-                          editorProperties: TrimEditorProperties(
-                            circleSize: 10,
-                            borderPaintColor: Colors.blue,
-                            borderWidth: 4,
-                            borderRadius: 5,
-                            circlePaintColor: Colors.blue.shade700,
-                          ),
-                          areaProperties:
-                              TrimAreaProperties.edgeBlur(blurEdges: true),
-                          onChangeStart: (value) => _startValue = value,
-                          onChangeEnd: (value) => _endValue = value,
-                          onChangePlaybackState: (value) {
-                            if (mounted) {
-                              setState(() => _isPlaying = value);
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      child: _isPlaying
-                          ? Icon(
-                              Icons.pause,
-                              size: 80.0,
-                              color: Theme.of(context).primaryColor,
-                            )
-                          : Icon(
-                              Icons.play_arrow,
-                              size: 80.0,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                      onPressed: () async {
-                        bool playbackState =
-                            await _trimmer.audioPlaybackControl(
-                          startValue: _startValue,
-                          endValue: _endValue,
-                        );
-                        setState(() => _isPlaying = playbackState);
-                      },
-                    )
+                    // Center(
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.all(8.0),
+                    //     child: TrimViewer(
+                    //       trimmer: _trimmer,
+                    //       viewerHeight: 50,
+                    //       maxAudioLength: const Duration(seconds: 50),
+                    //       viewerWidth: MediaQuery.of(context).size.width,
+                    //       durationStyle: DurationStyle.FORMAT_MM_SS,
+                    //       backgroundColor: Colors.white,
+                    //       barColor: Colors.black12,
+                    //       durationTextStyle:
+                    //           TextStyle(color: Theme.of(context).primaryColor),
+                    //       allowAudioSelection: true,
+                    //       editorProperties: TrimEditorProperties(
+                    //         circleSize: 10,
+                    //         borderPaintColor: Colors.blue,
+                    //         borderWidth: 4,
+                    //         borderRadius: 5,
+                    //         circlePaintColor: Colors.blue.shade700,
+                    //       ),
+                    //       areaProperties:
+                    //           TrimAreaProperties.edgeBlur(blurEdges: true),
+                    //       onChangeStart: (value) {
+                    //         _startValue = value;
+                    //       },
+                    //       onChangeEnd: (value) {
+                    //         _endValue = value;
+                    //       },
+                    //       onChangePlaybackState: (value) async {
+                    //         if (!value) {
+                    //           await _trimmerplay();
+                    //         }
+                    //       },
+                    //     ),
+                    //   ),
+                    // ),
+                    // TextButton(
+                    //   child: _isPlaying
+                    //       ? Icon(
+                    //           Icons.pause,
+                    //           size: 80.0,
+                    //           color: Theme.of(context).primaryColor,
+                    //         )
+                    //       : Icon(
+                    //           Icons.play_arrow,
+                    //           size: 80.0,
+                    //           color: Theme.of(context).primaryColor,
+                    //         ),
+                    //   onPressed: () async {
+                    //     bool playbackState =
+                    //         await _trimmer.audioPlaybackControl(
+                    //       startValue: _startValue,
+                    //       endValue: _endValue,
+                    //     );
+                    //     print(playbackState);
+                    //     setState(() => _isPlaying = playbackState);
+                    //   },
+                    // )
                   ],
                 ),
               ),

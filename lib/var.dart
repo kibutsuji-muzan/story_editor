@@ -31,14 +31,14 @@ List allWidgetsList = [
 ];
 
 class Song {
+  final String songId;
   final String title;
-  final String encrypted_media_url;
   final String thumbnail;
   final String subtitle;
 
   const Song({
+    required this.songId,
     required this.title,
-    required this.encrypted_media_url,
     required this.thumbnail,
     required this.subtitle,
   });
@@ -46,14 +46,14 @@ class Song {
   factory Song.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
+        'songId': String songId,
         'title': String title,
-        'encrypted_media_url': String encrypted_media_url,
         'thumbnail': String thumbnail,
         'subtitle': String subtitle,
       } =>
         Song(
+          songId: songId,
           title: title,
-          encrypted_media_url: encrypted_media_url,
           thumbnail: thumbnail,
           subtitle: subtitle,
         ),

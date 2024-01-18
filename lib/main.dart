@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_edit_story/components/MusicTestComp.dart';
 import 'package:flutter_edit_story/pages/test.dart';
 import 'package:flutter_edit_story/pages/video_edit_page.dart';
 import 'package:provider/provider.dart';
@@ -26,8 +27,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade700),
         useMaterial3: true,
+        fontFamily: 'Inter',
       ),
       home: const VideoEditPage(),
+      // home: const MusicTestComponent(),
     );
   }
 }

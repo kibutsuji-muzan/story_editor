@@ -24,7 +24,8 @@ class _TestPageState extends State<TestPage> {
           _widget(onDragEnd: () {}, onDragStart: () {}),
           ElevatedButton(
             onPressed: () async {
-              // var res = await jiosaavan.search.dio;
+              var res = await jiosaavan.songs.detailsById(['ishfUzbT']);
+              print(res[0].downloadUrl![0].link);
               // print(res.results[0].downloadUrl![0].link);
             },
             child: const Text('Press Me!'),

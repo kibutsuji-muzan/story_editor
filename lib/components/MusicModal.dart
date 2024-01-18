@@ -66,7 +66,7 @@ class _MusicModalState extends State<MusicModal> {
       setState(() {
         _searched.add(
           Song(
-            encrypted_media_url: song.downloadUrl![0].link,
+            songId: song.downloadUrl![0].link,
             thumbnail: song.image![0].link,
             title: song.name!,
             subtitle: song.primaryArtists,
@@ -183,8 +183,8 @@ class _MusicModalState extends State<MusicModal> {
                                 : _searched[index].subtitle,
                             setplaying: setnowplaying,
                             songVideoId: _searched.isEmpty
-                                ? widget.songs[index].encrypted_media_url
-                                : _searched[index].encrypted_media_url,
+                                ? widget.songs[index].songId
+                                : _searched[index].songId,
                           );
                         },
                       ),
@@ -226,30 +226,26 @@ class SongWidget extends StatefulWidget {
 // 04316b5bebmshf8cf862f74e9ee0p1d9076jsne54e53336856
 // 20b650b84amsh0cd2099e0175fbdp1f2bcfjsn07ac8174ebe5
 class _SongWidgetState extends State<SongWidget> {
+  JioSaavnClient jiosaavan = JioSaavnClient();
+
   @override
   void initState() {
     super.initState();
   }
 
-  Future<void> sendNotif() async {
+  Future<String> getUri() async {
     String url;
     if (!widget.songVideoId.contains('https://')) {
-      var res = await http.post(
-        Uri.https("jio-saavan-unofficial.p.rapidapi.com", "/getsong"),
-        headers: {
-          'content-type': 'application/json',
-          'X-RapidAPI-Key':
-              '20b650b84amsh0cd2099e0175fbdp1f2bcfjsn07ac8174ebe5',
-          'X-RapidAPI-Host': 'jio-saavan-unofficial.p.rapidapi.com'
-        },
-        body: jsonEncode({
-          "encrypted_media_url": widget.songVideoId,
-        }),
-      );
-      url = jsonDecode(res.body)['results'][0]['96_kbps'];
+      List res = await jiosaavan.songs.detailsById([widget.songVideoId]);
+      url = res[0].downloadUrl![0].link;
     } else {
       url = widget.songVideoId;
     }
+    return url;
+  }
+
+  Future<void> sendNotif() async {
+    String url = await getUri();
     widget.addwidget(MusicWidget(
         url: url,
         title: widget.title,
@@ -258,25 +254,7 @@ class _SongWidgetState extends State<SongWidget> {
   }
 
   Future<void> _getUrl(BuildContext ctx) async {
-    String url;
-    if (!widget.songVideoId.contains('https://')) {
-      var res = await http.post(
-        Uri.https("jio-saavan-unofficial.p.rapidapi.com", "/getsong"),
-        headers: {
-          'content-type': 'application/json',
-          'X-RapidAPI-Key':
-              '20b650b84amsh0cd2099e0175fbdp1f2bcfjsn07ac8174ebe5',
-          'X-RapidAPI-Host': 'jio-saavan-unofficial.p.rapidapi.com'
-        },
-        body: jsonEncode({
-          "encrypted_media_url": widget.songVideoId,
-        }),
-      );
-      url = jsonDecode(res.body)['results'][0]['96_kbps'];
-    } else {
-      url = widget.songVideoId;
-    }
-
+    String url = await getUri();
     // ignore: use_build_context_synchronously
     widget.setplaying(widget.songVideoId, ctx, url);
   }

@@ -9,7 +9,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
 class MusicTestComponent extends StatefulWidget {
-  const MusicTestComponent({super.key});
+  String url;
+  MusicTestComponent({
+    super.key,
+    required this.url,
+  });
 
   @override
   State<MusicTestComponent> createState() => _MusicTestComponentState();
@@ -34,8 +38,7 @@ class _MusicTestComponentState extends State<MusicTestComponent> {
 
   Future<void> loadAndSaveFile() async {
     var res = await http.get(
-      Uri.parse(
-          'https://aac.saavncdn.com/773/6e69a112de89c7655116dcf400019f9c_12.mp4'),
+      Uri.parse(widget.url),
     );
     Directory tempDir = await getTemporaryDirectory();
     String filename = '${tempDir.path}/audio.mp4';
@@ -115,65 +118,65 @@ class _MusicTestComponentState extends State<MusicTestComponent> {
                       // _progressVisibility ? null : () => _saveAudio(),
                       child: const Text("SAVE"),
                     ),
-                    // Center(
-                    //   child: Padding(
-                    //     padding: const EdgeInsets.all(8.0),
-                    //     child: TrimViewer(
-                    //       trimmer: _trimmer,
-                    //       viewerHeight: 50,
-                    //       maxAudioLength: const Duration(seconds: 50),
-                    //       viewerWidth: MediaQuery.of(context).size.width,
-                    //       durationStyle: DurationStyle.FORMAT_MM_SS,
-                    //       backgroundColor: Colors.white,
-                    //       barColor: Colors.black12,
-                    //       durationTextStyle:
-                    //           TextStyle(color: Theme.of(context).primaryColor),
-                    //       allowAudioSelection: true,
-                    //       editorProperties: TrimEditorProperties(
-                    //         circleSize: 10,
-                    //         borderPaintColor: Colors.blue,
-                    //         borderWidth: 4,
-                    //         borderRadius: 5,
-                    //         circlePaintColor: Colors.blue.shade700,
-                    //       ),
-                    //       areaProperties:
-                    //           TrimAreaProperties.edgeBlur(blurEdges: true),
-                    //       onChangeStart: (value) {
-                    //         _startValue = value;
-                    //       },
-                    //       onChangeEnd: (value) {
-                    //         _endValue = value;
-                    //       },
-                    //       onChangePlaybackState: (value) async {
-                    //         if (!value) {
-                    //           await _trimmerplay();
-                    //         }
-                    //       },
-                    //     ),
-                    //   ),
-                    // ),
-                    // TextButton(
-                    //   child: _isPlaying
-                    //       ? Icon(
-                    //           Icons.pause,
-                    //           size: 80.0,
-                    //           color: Theme.of(context).primaryColor,
-                    //         )
-                    //       : Icon(
-                    //           Icons.play_arrow,
-                    //           size: 80.0,
-                    //           color: Theme.of(context).primaryColor,
-                    //         ),
-                    //   onPressed: () async {
-                    //     bool playbackState =
-                    //         await _trimmer.audioPlaybackControl(
-                    //       startValue: _startValue,
-                    //       endValue: _endValue,
-                    //     );
-                    //     print(playbackState);
-                    //     setState(() => _isPlaying = playbackState);
-                    //   },
-                    // )
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TrimViewer(
+                          trimmer: _trimmer,
+                          viewerHeight: 50,
+                          maxAudioLength: const Duration(seconds: 50),
+                          viewerWidth: MediaQuery.of(context).size.width,
+                          durationStyle: DurationStyle.FORMAT_MM_SS,
+                          backgroundColor: Colors.white,
+                          barColor: Colors.black12,
+                          durationTextStyle:
+                              TextStyle(color: Theme.of(context).primaryColor),
+                          allowAudioSelection: true,
+                          editorProperties: TrimEditorProperties(
+                            circleSize: 10,
+                            borderPaintColor: Colors.blue,
+                            borderWidth: 4,
+                            borderRadius: 5,
+                            circlePaintColor: Colors.blue.shade700,
+                          ),
+                          areaProperties:
+                              TrimAreaProperties.edgeBlur(blurEdges: true),
+                          onChangeStart: (value) {
+                            _startValue = value;
+                          },
+                          onChangeEnd: (value) {
+                            _endValue = value;
+                          },
+                          onChangePlaybackState: (value) async {
+                            if (!value) {
+                              await _trimmerplay();
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      child: _isPlaying
+                          ? Icon(
+                              Icons.pause,
+                              size: 80.0,
+                              color: Theme.of(context).primaryColor,
+                            )
+                          : Icon(
+                              Icons.play_arrow,
+                              size: 80.0,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                      onPressed: () async {
+                        bool playbackState =
+                            await _trimmer.audioPlaybackControl(
+                          startValue: _startValue,
+                          endValue: _endValue,
+                        );
+                        print(playbackState);
+                        setState(() => _isPlaying = playbackState);
+                      },
+                    )
                   ],
                 ),
               ),

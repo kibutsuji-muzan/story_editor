@@ -1,14 +1,30 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
 import 'package:flutter_edit_story/var.dart';
+import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_edit_story/components/ScrollModal.dart';
 import 'package:flutter_edit_story/widgets/Widget.dart';
 import 'package:flutter_edit_story/API/saavan.dart' as savaanApi;
 
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
 class VideoEditPage extends StatefulWidget {
-  const VideoEditPage({super.key});
+  XFile file;
+  bool video;
+  VideoEditPage({
+    super.key,
+    required this.file,
+    required this.video,
+  });
 
   @override
   State<StatefulWidget> createState() => _VideoEditPageState();
@@ -25,9 +41,21 @@ class _VideoEditPageState extends State<VideoEditPage> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/video.mp4');
-    _initController = _controller.initialize().then((_) => _controller.pause());
-    _controller.setLooping(true);
+    if (widget.video) {
+      _controller =
+          // VideoPlayerController.networkUrl(Uri.parse(widget.file.path));
+          VideoPlayerController.asset('assets/video.mp4');
+      _initController = _controller.initialize().then((_) {
+        Provider.of<VideoDurationModel>(
+          context,
+          listen: false,
+        ).setDurationInMilliSeconds(
+          _controller.value.duration.inMilliseconds,
+        );
+        _controller.pause();
+      });
+      _controller.setLooping(true);
+    }
     get_music();
   }
 
@@ -55,12 +83,13 @@ class _VideoEditPageState extends State<VideoEditPage> {
         ),
       );
     }
-    print(res[0]);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (widget.video) {
+      _controller.dispose();
+    }
     super.dispose();
   }
 
@@ -69,12 +98,18 @@ class _VideoEditPageState extends State<VideoEditPage> {
     return Scaffold(
       body: Stack(
         children: [
-          FutureBuilder(
-            future: _initController,
-            builder: (context, snapshot) {
-              return VideoPlayer(_controller);
-            },
-          ),
+          (widget.video)
+              ? FutureBuilder(
+                  future: _initController,
+                  builder: (context, snapshot) {
+                    return VideoPlayer(_controller);
+                  },
+                )
+              : Image.file(
+                  File(widget.file.path),
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                ),
           for (Widget elem in _localactivelist)
             WidgetItem(
               key: elem.key,
@@ -145,26 +180,27 @@ class _VideoEditPageState extends State<VideoEditPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IconButton(
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.black26,
+                    if (widget.video)
+                      IconButton(
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.black26,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _audio = !_audio;
+                          });
+                          _audio
+                              ? _controller.setVolume(100)
+                              : _controller.setVolume(0.0);
+                        },
+                        splashColor: Colors.white,
+                        icon: Icon(
+                          (_audio)
+                              ? Icons.music_note_rounded
+                              : Icons.music_off_rounded,
+                          color: Colors.white,
+                        ),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _audio = !_audio;
-                        });
-                        _audio
-                            ? _controller.setVolume(100)
-                            : _controller.setVolume(0.0);
-                      },
-                      splashColor: Colors.white,
-                      icon: Icon(
-                        (_audio)
-                            ? Icons.music_note_rounded
-                            : Icons.music_off_rounded,
-                        color: Colors.white,
-                      ),
-                    ),
                     IconButton(
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.black26,
@@ -192,10 +228,17 @@ class _VideoEditPageState extends State<VideoEditPage> {
                         backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
                         isScrollControlled: true,
                         builder: (context) {
-                          return ChangeNotifierProvider<PlayingSong>(
-                            create: (context) => PlayingSong(),
-                            child:
-                                MusicModal(songs: songs, notifyParent: refresh),
+                          return MultiProvider(
+                            providers: [
+                              ChangeNotifierProvider(
+                                  create: (_) => PlayingSong()),
+                              ChangeNotifierProvider(
+                                  create: (context) => VideoDurationModel())
+                            ],
+                            child: MusicModal(
+                              songs: songs,
+                              notifyParent: refresh,
+                            ),
                           );
                         },
                       ),

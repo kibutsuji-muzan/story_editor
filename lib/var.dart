@@ -80,4 +80,15 @@ class PlayingSong with ChangeNotifier {
   }
 }
 
+class VideoDurationModel extends ChangeNotifier {
+  int _durationInMilliSeconds = 0;
+
+  int get durationInMilliSeconds => _durationInMilliSeconds;
+
+  void setDurationInMilliSeconds(int seconds) {
+    _durationInMilliSeconds = seconds;
+    notifyListeners(); // Notify listeners of the change
+  }
+}
+
 class PlayerWidget with ChangeNotifier {}

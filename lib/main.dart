@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_edit_story/components/MusicTestComp.dart';
 import 'package:flutter_edit_story/pages/test.dart';
-import 'package:flutter_edit_story/pages/video_edit_page.dart';
+// import 'package:flutter_edit_story/pages/test.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_edit_story/var.dart';
+import 'package:camera/camera.dart';
+import 'package:flutter_edit_story/pages/camera_page.dart';
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PlayingSong()),
+        ChangeNotifierProvider(
+          create: (context) => VideoDurationModel(),
+        )
       ],
       child: const MyApp(),
     ),
@@ -29,55 +33,40 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Inter',
       ),
-      home: const VideoEditPage(),
+      home: TestPage(),
       // home: const MusicTestComponent(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      appBar: AppBar(title: const Text("Home Page")),
+      body: SafeArea(
+        child: Center(
+          child: ElevatedButton(
+            onPressed: () async {
+              await availableCameras().then(
+                (value) => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CameraPage(cameras: value),
+                  ),
+                ),
+              );
+            },
+            child: const Text("Take a Picture"),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

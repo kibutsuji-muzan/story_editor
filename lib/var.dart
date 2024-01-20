@@ -91,4 +91,13 @@ class VideoDurationModel extends ChangeNotifier {
   }
 }
 
-class PlayerWidget with ChangeNotifier {}
+class TrimmedAudio extends ChangeNotifier {
+  String _outputPath = '';
+
+  String get outputPath => _outputPath;
+
+  void setOutputPath(String path) {
+    _outputPath = path;
+    notifyListeners(); // Notify listeners of the change
+  }
+}

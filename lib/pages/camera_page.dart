@@ -70,12 +70,13 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
     try {
       await _cameraController.setFlashMode(FlashMode.off);
       XFile picture = await _cameraController.takePicture();
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => VideoEditPage(
             file: picture,
-            video: !false,
+            video: false,
           ),
         ),
       );
@@ -103,7 +104,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
         MaterialPageRoute(
           builder: (context) => VideoEditPage(
             file: video,
-            video: !true,
+            video: true,
           ),
         ),
       );

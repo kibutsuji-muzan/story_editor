@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:easy_audio_trimmer/easy_audio_trimmer.dart';
@@ -7,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 
 class MusicTestComponent extends StatefulWidget {
   String url;
@@ -22,8 +25,8 @@ class MusicTestComponent extends StatefulWidget {
 class _MusicTestComponentState extends State<MusicTestComponent> {
   final Trimmer _trimmer = Trimmer();
 
-  double _startValue = 0.0;
-  double _endValue = 0.0;
+  Duration _startValue = Duration(milliseconds: 0);
+  Duration _endValue = Duration(milliseconds: 0);
 
   bool _isPlaying = true;
   bool _progressVisibility = false;
@@ -64,28 +67,51 @@ class _MusicTestComponentState extends State<MusicTestComponent> {
 
   Future<void> _trimmerplay() async {
     bool _playback = await _trimmer.audioPlaybackControl(
-        startValue: _startValue, endValue: _endValue);
+      startValue: _startValue.inMilliseconds.toDouble(),
+      endValue: _endValue.inMilliseconds.toDouble(),
+    );
     setState(() {
       _isPlaying = _playback;
     });
   }
 
-  _saveAudio() {
-    setState(() {
-      _progressVisibility = true;
-    });
+  _saveAudio() async {
+    try {
+      print(_trimmer.currentAudioFile?.path);
+      print(
+          '${_startValue.format(DurationStyle.FORMAT_HH_MM_SS)} , ${_endValue.format(DurationStyle.FORMAT_HH_MM_SS_MS)}');
 
-    _trimmer.saveTrimmedAudio(
-      startValue: _startValue,
-      endValue: _endValue,
-      audioFileName: DateTime.now().millisecondsSinceEpoch.toString(),
-      onSave: (outputPath) {
-        setState(() {
-          _progressVisibility = false;
-        });
-        debugPrint('OUTPUT PATH: $outputPath');
-      },
-    );
+      var outPath =
+          '/data/user/0/com.example.flutter_edit_story/cache/output2.mp4';
+      var cmd =
+          "-y -i ${_trimmer.currentAudioFile?.path} -vn -ss 0${_startValue} -to 0${_endValue} -ar 16k -ac 2 -b:a 96k -acodec copy $outPath";
+      // var cmd =
+      //     "-y -i ${_trimmer.currentAudioFile?.path} -vn -ss 00:00:00 -to 00:00:50 -ar 16k -ac 2 -b:a 96k -acodec copy $outPath";
+      print(cmd);
+
+      FFmpegKit.executeAsync(cmd, (session) async {
+        final returnCode = await session.getReturnCode();
+
+        if (ReturnCode.isSuccess(returnCode)) {
+          print('success');
+        } else if (ReturnCode.isCancel(returnCode)) {
+          print('cancle');
+          // CANCEL
+        } else {
+          print('error');
+          // ERROR
+        }
+        print("returnCode $returnCode");
+      });
+    } catch (e) {
+      print('error: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _trimmer.audioPlayer!.dispose();
   }
 
   @override
@@ -113,9 +139,9 @@ class _MusicTestComponentState extends State<MusicTestComponent> {
                     ),
                     ElevatedButton(
                       onPressed: () {
+                        _saveAudio();
                         print('$_startValue , $_endValue');
                       },
-                      // _progressVisibility ? null : () => _saveAudio(),
                       child: const Text("SAVE"),
                     ),
                     Center(
@@ -142,10 +168,10 @@ class _MusicTestComponentState extends State<MusicTestComponent> {
                           areaProperties:
                               TrimAreaProperties.edgeBlur(blurEdges: true),
                           onChangeStart: (value) {
-                            _startValue = value;
+                            _startValue = Duration(milliseconds: value.toInt());
                           },
                           onChangeEnd: (value) {
-                            _endValue = value;
+                            _endValue = Duration(milliseconds: value.toInt());
                           },
                           onChangePlaybackState: (value) async {
                             if (!value) {
@@ -155,26 +181,14 @@ class _MusicTestComponentState extends State<MusicTestComponent> {
                         ),
                       ),
                     ),
-                    TextButton(
-                      child: _isPlaying
-                          ? Icon(
-                              Icons.pause,
-                              size: 80.0,
-                              color: Theme.of(context).primaryColor,
-                            )
-                          : Icon(
-                              Icons.play_arrow,
-                              size: 80.0,
-                              color: Theme.of(context).primaryColor,
-                            ),
+                    IconButton.filled(
+                      icon: Icon(
+                        Icons.play_arrow,
+                        size: 80.0,
+                        color: Theme.of(context).primaryColor,
+                      ),
                       onPressed: () async {
-                        bool playbackState =
-                            await _trimmer.audioPlaybackControl(
-                          startValue: _startValue,
-                          endValue: _endValue,
-                        );
-                        print(playbackState);
-                        setState(() => _isPlaying = playbackState);
+                        _trimmer.audioPlayer!.dispose();
                       },
                     )
                   ],

@@ -55,7 +55,7 @@ class MusicWidget extends StatefulWidget {
 
 class _MusicWidgetState extends State<MusicWidget> {
   final String gifAsset = 'assets/music.gif';
-  final Trimmer _trimmer = Trimmer();
+  late final Trimmer _trimmer;
   double _start = 0;
   double _end = 0;
 
@@ -65,6 +65,7 @@ class _MusicWidgetState extends State<MusicWidget> {
   @override
   void initState() {
     super.initState();
+    _trimmer = Trimmer();
     loadAndSaveFile();
   }
 
@@ -85,7 +86,9 @@ class _MusicWidgetState extends State<MusicWidget> {
     String filename = '${tempDir.path}/${widget.url.length}.mp4';
     bool fileExists = await File(filename).exists();
     File file = File(filename);
-    await file.writeAsBytes(res.bodyBytes);
+    if (!fileExists) {
+      await file.writeAsBytes(res.bodyBytes);
+    }
     setState(() {
       _file = file;
     });
@@ -97,47 +100,66 @@ class _MusicWidgetState extends State<MusicWidget> {
   }
 
   Future<void> _trimmerplay() async {
-    await _trimmer.audioPlaybackControl(startValue: _start, endValue: _end);
+    print('$_start , $_end');
+    print(_file.path);
+
+    await _trimmer.audioPlaybackControl(
+      startValue: _start,
+      endValue: _end,
+    );
   }
 
-  void _setClip(bool again, {required double start, required double end}) {
+  void _setClip(bool again, Trimmer? trimmer,
+      {required double start, required double end}) async {
     // print(_file.path);
     setState(() {
       _start = start;
       _end = end;
     });
     if (again) {
-      print(_file.path);
-      loadAndSaveFile();
+      // print(_file.path);
+      await trimmer!.audioPlaybackControl(startValue: start, endValue: end);
     } else {
-      _trimmerplay();
+      await _trimmerplay();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        context.pushTransparentRoute(
-          _TrimmingPage(
-            url: widget.url,
-            title: widget.title,
-            thumbnail: widget.thumbnail,
-            subtitle: widget.subtitle,
-            setClip: _setClip,
-            trimmer: _trimmer,
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            context.pushTransparentRoute(
+              _TrimmingPage(
+                url: widget.url,
+                title: widget.title,
+                thumbnail: widget.thumbnail,
+                subtitle: widget.subtitle,
+                setClip: _setClip,
+                trimmer: _trimmer,
+              ),
+            );
+          },
+          behavior: HitTestBehavior.translucent,
+          child: Hero(
+            tag: widget.title,
+            child: _WidgetMusic(
+              title: widget.title,
+              thumbnail: widget.thumbnail,
+              subtitle: widget.subtitle,
+            ),
           ),
-        );
-      },
-      behavior: HitTestBehavior.translucent,
-      child: Hero(
-        tag: widget.title,
-        child: _WidgetMusic(
-          title: widget.title,
-          thumbnail: widget.thumbnail,
-          subtitle: widget.subtitle,
         ),
-      ),
+        IconButton.filled(
+          onPressed: () {
+            _trimmer.audioPlayer!.dispose();
+          },
+          icon: const Icon(
+            Icons.stop_circle,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -174,6 +196,7 @@ class _TrimmingPageState extends State<_TrimmingPage> {
       onDismissed: () {
         widget.setClip(
           true,
+          widget.trimmer,
           start: _startValue,
           end: _endValue,
         );
@@ -223,10 +246,14 @@ class _TrimmingPageState extends State<_TrimmingPage> {
                 ),
                 areaProperties: TrimAreaProperties.edgeBlur(blurEdges: true),
                 onChangeStart: (value) {
-                  _startValue = value;
+                  setState(() {
+                    _startValue = value;
+                  });
                 },
                 onChangeEnd: (value) {
-                  _endValue = value;
+                  setState(() {
+                    _endValue = value;
+                  });
                 },
                 onChangePlaybackState: (value) async {
                   if (!value) {

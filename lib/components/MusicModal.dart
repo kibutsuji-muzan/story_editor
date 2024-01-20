@@ -244,11 +244,13 @@ class _SongWidgetState extends State<SongWidget> {
 
   Future<void> sendNotif() async {
     String url = await getUri();
-    widget.addwidget(MusicWidget(
-        url: url,
-        title: widget.title,
-        thumbnail: widget.thumbnail,
-        subtitle: widget.subtitle));
+    widget.addwidget(
+      MusicWidget(
+          url: url,
+          title: widget.title,
+          thumbnail: widget.thumbnail,
+          subtitle: widget.subtitle),
+    );
   }
 
   Future<void> _getUrl(BuildContext ctx) async {

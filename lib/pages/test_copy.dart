@@ -1,23 +1,49 @@
+import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter_edit_story/var.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
 import 'package:easy_audio_trimmer/easy_audio_trimmer.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dismissible_page/dismissible_page.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+
+final ValueNotifier<Matrix4> notifier = ValueNotifier(Matrix4.identity());
+
+class TestPage extends StatefulWidget {
+  const TestPage({super.key});
+
+  @override
+  State<TestPage> createState() => _TestPageState();
+}
+
+class _TestPageState extends State<TestPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: MusicWidget(
+        url:
+            'https://aac.saavncdn.com/773/6e69a112de89c7655116dcf400019f9c_12.mp4',
+        title: 'title',
+        thumbnail:
+            'https://c.saavncdn.com/433/Shikayat-Hindi-2023-20231214181447-150x150.jpg',
+        subtitle: 'subtitle',
+      ),
+    );
+  }
+}
 
 class MusicWidget extends StatefulWidget {
   String url;
   String title;
   String thumbnail;
   String subtitle;
-  Key key = Key('Music');
+
   MusicWidget({
+    super.key,
     required this.url,
     required this.title,
     required this.thumbnail,
@@ -30,81 +56,75 @@ class MusicWidget extends StatefulWidget {
 
 class _MusicWidgetState extends State<MusicWidget> {
   final String gifAsset = 'assets/music.gif';
+  final _player = AudioPlayer();
   late File _file;
-  final AudioPlayer _player = AudioPlayer();
+
   @override
   void initState() {
-    print('object');
     super.initState();
     saveSong().then((value) {
-      context.pushTransparentRoute(
-        _TrimmingPage(
-          file: _file,
-          title: widget.title,
-          thumbnail: widget.thumbnail,
-          subtitle: widget.subtitle,
-          setClip: playSong,
-        ),
-      );
+      _player.setUrl(widget.url);
+      _player.setLoopMode(LoopMode.one);
+      _player.play();
     });
   }
 
-  void playSong({required File file}) async {
-    print(_player);
-    await _player.setFilePath(file.path);
-    print('hello have a cup cake!! ${file.path}');
-    _player.setLoopMode(LoopMode.one);
-    _player.play();
-  }
-
   Future<void> saveSong() async {
-    print(_player);
     var res = await http.get(
       Uri.parse(widget.url),
     );
     Directory tempDir = await getTemporaryDirectory();
     String filename = '${tempDir.path}/${widget.url.length}.mp4';
+    bool fileExists = await File(filename).exists();
     File file = File(filename);
-
-    await file.writeAsBytes(res.bodyBytes);
-
+    if (!fileExists) {
+      await file.writeAsBytes(res.bodyBytes);
+    }
     setState(() {
       _file = file;
     });
-    // playSong(file: file);
-  }
-
-  @override
-  void dispose() {
-    _player.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        context.pushTransparentRoute(
-          _TrimmingPage(
-            file: _file,
-            title: widget.title,
-            thumbnail: widget.thumbnail,
-            subtitle: widget.subtitle,
-            setClip: playSong,
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            _player.dispose();
+            context.pushTransparentRoute(
+              _TrimmingPage(
+                file: _file,
+                title: widget.title,
+                thumbnail: widget.thumbnail,
+                subtitle: widget.subtitle,
+                // setClip: _setClip,
+              ),
+            );
+          },
+          behavior: HitTestBehavior.translucent,
+          child: Hero(
+            tag: widget.title,
+            child: _WidgetMusic(
+              title: widget.title,
+              thumbnail: widget.thumbnail,
+              subtitle: widget.subtitle,
+            ),
           ),
-        );
-      },
-      behavior: HitTestBehavior.translucent,
-      child: Hero(
-        tag: widget.title,
-        child: _WidgetMusic(
-          title: widget.title,
-          thumbnail: widget.thumbnail,
-          subtitle: widget.subtitle,
         ),
-      ),
+        IconButton.filled(
+          onPressed: () {
+            // _trimmer.audioPlayer!.dispose();
+          },
+          icon: const Icon(
+            Icons.stop_circle,
+          ),
+        ),
+      ],
     );
   }
+
+  _setClip() {}
 }
 
 class _TrimmingPage extends StatefulWidget {
@@ -112,14 +132,12 @@ class _TrimmingPage extends StatefulWidget {
   String title;
   String thumbnail;
   String subtitle;
-  Function setClip;
   _TrimmingPage({
     super.key,
     required this.file,
     required this.title,
     required this.thumbnail,
     required this.subtitle,
-    required this.setClip,
   });
 
   @override
@@ -127,15 +145,12 @@ class _TrimmingPage extends StatefulWidget {
 }
 
 class _TrimmingPageState extends State<_TrimmingPage> {
-  Duration _startValue = Duration(milliseconds: 0);
-  Duration _endValue = Duration(milliseconds: 0);
-
+  double _startValue = 0.0;
+  double _endValue = 0.0;
   final Trimmer _trimmer = Trimmer();
-  // late File _file;
-  bool _isPlaying = true;
-  // bool _progressVisibility = false;
-  bool isLoading = true;
 
+  late File _file;
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -152,10 +167,6 @@ class _TrimmingPageState extends State<_TrimmingPage> {
   }
 
   void _loadAudio() async {
-    setState(() {
-      isLoading = true;
-    });
-
     await _trimmer
         .loadAudio(audioFile: widget.file)
         .then((value) => _trimmerplay());
@@ -166,63 +177,51 @@ class _TrimmingPageState extends State<_TrimmingPage> {
   }
 
   Future<void> _trimmerplay() async {
-    debugPrint('trimmerPlayed');
     await _trimmer.audioPlaybackControl(
-        startValue: _startValue.inMilliseconds.toDouble(),
-        endValue: _endValue.inMilliseconds.toDouble());
+      startValue: _startValue,
+      endValue: _endValue,
+    );
   }
 
-  Future<void> _saveAudio() async {
-    try {
-      Directory tempDir = await getTemporaryDirectory();
-      var outPath = '${tempDir.path}/output.mp4';
-      var cmd =
-          "-y -i ${_trimmer.currentAudioFile?.path} -vn -ss ${_startValue} -to ${_endValue} -ar 16k -ac 2 -b:a 96k -acodec copy $outPath";
-      debugPrint(cmd);
-      Provider.of<TrimmedAudio>(context, listen: false).setOutputPath(outPath);
-      await FFmpegKit.execute(cmd);
-      debugPrint('hello have this cupcake $outPath');
-      // FFmpegKit.executeAsync(cmd, (session) async {
-      //   final returnCode = await session.getReturnCode();
-      //   if (ReturnCode.isSuccess(returnCode)) {
-      //     debugPrint('success');
-      //   } else if (ReturnCode.isCancel(returnCode)) {
-      //     debugPrint('cancle');
-      //   } else {
-      //     debugPrint('error');
-      //   }
-      //   debugPrint("returnCode $returnCode");
-      // });
-    } catch (e) {
-      debugPrint('error: $e');
-    }
-  }
-
-  Future<void> close() async {
-    await _saveAudio().then((value) => widget.setClip(
-          file: File(
-              Provider.of<TrimmedAudio>(context, listen: false).outputPath),
-        ));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _trimmer.audioPlayer!.dispose();
+  // void _setClip(bool again, Trimmer? trimmer,
+  //     {required double start, required double end}) async {
+  //   // print(_file.path);
+  //   setState(() {
+  //     _start = start;
+  //     _end = end;
+  //   });
+  //   if (again) {
+  //     // print(_file.path);
+  //     await trimmer!.audioPlaybackControl(startValue: start, endValue: end);
+  //   } else {
+  //     await _trimmerplay();
+  //   }
+  // }
+  _saveAudio() async {
+    await _trimmer.saveTrimmedAudio(
+      startValue: _startValue,
+      endValue: _endValue,
+      audioFileName: DateTime.now().millisecondsSinceEpoch.toString(),
+      onSave: (outputPath) {
+        print('OUTPUT PATH: $outputPath');
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return DismissiblePage(
       backgroundColor: Colors.black12,
-      startingOpacity: 0.6,
+      startingOpacity: 0.95,
       onDismissed: () async {
-        setState(() {
-          _isPlaying = false;
-        });
-        close().then(
-          (value) => Navigator.of(context).pop(),
-        );
+        await _saveAudio();
+        _trimmer.audioPlayer!.dispose();
+        // widget.setClip(
+        //   true,
+        //   start: _startValue,
+        //   end: _endValue,
+        // );
+        Navigator.of(context).pop();
       },
       child: Padding(
         padding: const EdgeInsets.all(22),
@@ -242,14 +241,13 @@ class _TrimmingPageState extends State<_TrimmingPage> {
               const SizedBox(
                 height: 20,
               ),
-              isLoading
-                  ? const CircularProgressIndicator()
+              (isLoading)
+                  ? CircularProgressIndicator()
                   : TrimViewer(
                       trimmer: _trimmer,
                       viewerHeight: 40,
-                      maxAudioLength: Duration(
-                        milliseconds: Provider.of<VideoDurationModel>(context)
-                            .durationInMilliSeconds,
+                      maxAudioLength: const Duration(
+                        milliseconds: 50000,
                       ),
                       viewerWidth: MediaQuery.of(context).size.width,
                       durationStyle: DurationStyle.FORMAT_MM_SS,
@@ -260,7 +258,7 @@ class _TrimmingPageState extends State<_TrimmingPage> {
                         fontSize: 10,
                         decoration: TextDecoration.none,
                       ),
-                      // allowAudioSelection: true,
+                      allowAudioSelection: true,
                       editorProperties: TrimEditorProperties(
                         circleSize: 10,
                         borderPaintColor: Colors.blue,
@@ -271,16 +269,23 @@ class _TrimmingPageState extends State<_TrimmingPage> {
                       areaProperties:
                           TrimAreaProperties.edgeBlur(blurEdges: true),
                       onChangeStart: (value) {
-                        _startValue = Duration(milliseconds: value.toInt());
+                        setState(() {
+                          _startValue = value;
+                        });
                       },
                       onChangeEnd: (value) {
-                        _endValue = Duration(milliseconds: value.toInt());
+                        setState(() {
+                          _endValue = value;
+                        });
                       },
                       onChangePlaybackState: (value) async {
                         if (!value) {
-                          if (_isPlaying) {
-                            await _trimmerplay();
-                          }
+                          _trimmerplay();
+                          // await widget.setClip(
+                          //   false,
+                          //   start: _startValue,
+                          //   end: _endValue,
+                          // );
                         }
                       },
                     ),

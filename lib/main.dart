@@ -11,9 +11,8 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PlayingSong()),
-        ChangeNotifierProvider(
-          create: (context) => VideoDurationModel(),
-        )
+        ChangeNotifierProvider(create: (_) => VideoDurationModel()),
+        ChangeNotifierProvider(create: (_) => TrimmedAudio()),
       ],
       child: const MyApp(),
     ),
@@ -33,8 +32,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Inter',
       ),
-      home: TestPage(),
-      // home: const MusicTestComponent(),
+      // home: const HomePage(),
+      home: const HomePage(),
     );
   }
 }

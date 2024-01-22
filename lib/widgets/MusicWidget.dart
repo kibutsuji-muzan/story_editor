@@ -182,17 +182,6 @@ class _TrimmingPageState extends State<_TrimmingPage> {
       Provider.of<TrimmedAudio>(context, listen: false).setOutputPath(outPath);
       await FFmpegKit.execute(cmd);
       debugPrint('hello have this cupcake $outPath');
-      // FFmpegKit.executeAsync(cmd, (session) async {
-      //   final returnCode = await session.getReturnCode();
-      //   if (ReturnCode.isSuccess(returnCode)) {
-      //     debugPrint('success');
-      //   } else if (ReturnCode.isCancel(returnCode)) {
-      //     debugPrint('cancle');
-      //   } else {
-      //     debugPrint('error');
-      //   }
-      //   debugPrint("returnCode $returnCode");
-      // });
     } catch (e) {
       debugPrint('error: $e');
     }
@@ -253,6 +242,7 @@ class _TrimmingPageState extends State<_TrimmingPage> {
                       ),
                       viewerWidth: MediaQuery.of(context).size.width,
                       durationStyle: DurationStyle.FORMAT_MM_SS,
+                      allowAudioSelection: false,
                       backgroundColor: Colors.white,
                       barColor: Colors.black12,
                       durationTextStyle: TextStyle(
@@ -260,16 +250,16 @@ class _TrimmingPageState extends State<_TrimmingPage> {
                         fontSize: 10,
                         decoration: TextDecoration.none,
                       ),
-                      // allowAudioSelection: true,
                       editorProperties: TrimEditorProperties(
-                        circleSize: 10,
+                        circleSize: 0,
                         borderPaintColor: Colors.blue,
                         borderWidth: 4,
                         borderRadius: 5,
                         circlePaintColor: Colors.blue.shade700,
                       ),
-                      areaProperties:
-                          TrimAreaProperties.edgeBlur(blurEdges: true),
+                      areaProperties: TrimAreaProperties.fixed(
+                          borderRadius: 10, barFit: BoxFit.cover),
+                      showDuration: true,
                       onChangeStart: (value) {
                         _startValue = Duration(milliseconds: value.toInt());
                       },

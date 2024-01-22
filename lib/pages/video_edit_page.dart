@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
+import 'package:flutter_edit_story/pages/output_page.dart';
 import 'package:flutter_edit_story/var.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -34,7 +36,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
   bool _deleteButtonActive = false;
   final List<Widget> _localactivelist = [];
   List<Song> songs = [];
-
+  late String outPath;
   @override
   void initState() {
     super.initState();
@@ -90,7 +92,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
       setState(() {
         _audioplaying = false;
       });
-      _controller.setVolume(100);
+      if (widget.video) _controller.setVolume(100);
     });
   }
 
@@ -111,12 +113,25 @@ class _VideoEditPageState extends State<VideoEditPage> {
 
   Future<void> saveVideo() async {
     Directory tempDir = await getTemporaryDirectory();
-    var outPath = '${tempDir.path}/results/output.mp4';
     var audio = Provider.of<TrimmedAudio>(context, listen: false).outputPath;
-    var cmd =
-        "-i ${widget.file.path} -i ${audio} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 ${outPath}";
-    debugPrint(cmd);
-    await FFmpegKit.execute(cmd);
+    setState(() {
+      outPath = '${tempDir.path}/result.mp4';
+    });
+    String cmd = '';
+    if (_audioplaying && widget.video) {
+      cmd =
+          "-i ${widget.file.path} -i $audio -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 $outPath";
+    } else if (_audioplaying) {
+      cmd = "-loop 1 -i ${widget.file.path} -i $audio -shortest $outPath";
+    } else if (!widget.video) {
+      //need replacement
+      cmd =
+          "-loop 1 -i ${widget.file.path} -c:v libx265 -crf 28 -t 15 -pix_fmt yuv420p -vf scale=320:240 $outPath";
+    } else {
+      cmd =
+          '-i ${widget.file.path} -vcodec libx265 -crf 28 $outPath'; //need replacement
+    }
+    await FFmpegKit.execute(cmd).then((value) => debugPrint(cmd));
   }
 
   @override
@@ -163,7 +178,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
                           (element) {
                             if (element.key == Key('Music')) {
                               _audioplaying = false;
-                              _controller.setVolume(100);
+                              if (widget.video) _controller.setVolume(100);
                             }
                             return element.key == key;
                           },
@@ -317,7 +332,17 @@ class _VideoEditPageState extends State<VideoEditPage> {
                       ),
                       backgroundColor: Theme.of(context).canvasColor,
                     ),
-                    onPressed: () => saveVideo(),
+                    onPressed: () => saveVideo().then(
+                      (value) => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            print(outPath);
+                            return OutputPage(video: File(outPath));
+                          },
+                        ),
+                      ),
+                    ),
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width * 0.14,
                       child: const Row(

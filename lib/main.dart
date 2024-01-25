@@ -15,6 +15,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => VideoDurationModel()),
         ChangeNotifierProvider(create: (_) => TrimmedAudio()),
         ChangeNotifierProvider(create: (_) => SelectedProduct()),
+        ChangeNotifierProvider(create: (_) => ActiveWidget())
       ],
       child: const MyApp(),
     ),
@@ -34,11 +35,11 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Inter',
       ),
-      home: const HomePage(),
-      // home: VideoEditPage(
-      //   file: XFile('assets/video.mp4'),
-      //   video: true,
-      // ),
+      // home: const HomePage(),
+      home: VideoEditPage(
+        file: XFile('assets/video.mp4'),
+        video: true,
+      ),
     );
   }
 }

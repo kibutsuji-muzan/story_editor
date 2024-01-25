@@ -18,12 +18,12 @@ chooseWidget(Widget item) {
     case MusicWidget():
       return item;
     default:
-      return new Text('hello');
+      return const Text('hello');
   }
 }
 
 List allWidgetsList = [
-  PollsWidget(),
+  const PollsWidget(),
   SvgPicture.asset(
     'assets/sticker.svg',
     width: 100,
@@ -63,7 +63,7 @@ class Song {
 }
 
 class PlayingSong with ChangeNotifier {
-  String? _song = null;
+  String? _song;
   bool _playing = false;
 
   String? get song => _song;
@@ -114,12 +114,27 @@ class TrimmedAudio extends ChangeNotifier {
 }
 
 class ActiveWidget extends ChangeNotifier {
+  // ignore: prefer_final_fields
   List<Map<String, dynamic>> _widgets = [];
 
   List<Map<String, dynamic>> get widgetlist => _widgets;
 
   void addWidget(Map<String, dynamic> widget) {
     _widgets.add(widget);
+    notifyListeners();
+  }
+
+  void removeKey({required Key key}) {
+    _widgets.removeWhere((element) => element['widget'].key == key);
+    notifyListeners();
+  }
+
+  void updatePosition({required Key key, required Matrix4 matrix}) {
+    List<num> mat = List<num>.filled(16, 0, growable: false);
+    matrix.copyIntoArray(mat);
+    _widgets
+        .where((element) => element['widget'].key == key)
+        .first['position'] = mat;
     notifyListeners();
   }
 }

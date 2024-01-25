@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_edit_story/var.dart';
 import 'package:matrix_gesture_detector/matrix_gesture_detector.dart';
+import 'package:provider/provider.dart';
 
 typedef PointMoveCallback = void Function(Offset offset, Key? key);
 
 class WidgetItem extends StatefulWidget {
   final Widget widget;
-  const WidgetItem({
-    super.key,
+  Key key;
+  WidgetItem({
+    required this.key,
     required this.widget,
     required this.onDragEnd,
     required this.onDragStart,
@@ -37,14 +40,14 @@ class _WidgetItemState extends State<WidgetItem> {
         onMatrixUpdate: (m, tm, sm, rm) {
           //should save m in provider for positioning in sttory
           notifier.value = m;
+          Provider.of<ActiveWidget>(context, listen: false)
+              .updatePosition(key: widget.key, matrix: m);
         },
         onScaleStart: () {
           widget.onDragStart();
         },
         onScaleEnd: () {
           widget.onDragEnd(offset, widget.key);
-          print('hi');
-          print(offset);
         },
         child: AnimatedBuilder(
           animation: notifier,

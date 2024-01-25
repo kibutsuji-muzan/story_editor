@@ -34,7 +34,6 @@ class _VideoEditPageState extends State<VideoEditPage> {
   bool _audio = true;
   bool _deleteButton = false;
   bool _deleteButtonActive = false;
-  final List<Widget> _localactivelist = [];
   List<Song> songs = [];
   late String outPath;
 
@@ -49,13 +48,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
           allowBackgroundPlayback: true,
         ),
       );
-      // VideoPlayerController.asset(
-      //   'assets/video.mp4',
-      //   videoPlayerOptions: VideoPlayerOptions(
-      //     mixWithOthers: true,
-      //     allowBackgroundPlayback: true,
-      //   ),
-      // );
+
       _initController = _controller.initialize().then((_) {
         Provider.of<VideoDurationModel>(
           context,
@@ -76,9 +69,10 @@ class _VideoEditPageState extends State<VideoEditPage> {
   }
 
   void refresh(Widget item) {
-    setState(() {
-      _localactivelist.add(chooseWidget(item));
-    });
+    Provider.of<ActiveWidget>(context, listen: false)
+        .addWidget({'widget': chooseWidget(item)});
+    setState(() {});
+
     if (item.key == const Key('Music')) {
       setState(() {
         _audioplaying = true;
@@ -89,7 +83,8 @@ class _VideoEditPageState extends State<VideoEditPage> {
 
   void removeMusic() {
     setState(() {
-      _localactivelist.removeWhere((element) => element.key == Key('Music'));
+      Provider.of<ActiveWidget>(context, listen: false)
+          .removeKey(key: const Key('Music'));
       setState(() {
         _audioplaying = false;
       });
@@ -113,6 +108,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
   }
 
   Future<void> saveVideo() async {
+    print(Provider.of<ActiveWidget>(context, listen: false).widgetlist);
     Directory tempDir = await getTemporaryDirectory();
     var audio = Provider.of<TrimmedAudio>(context, listen: false).outputPath;
     setState(() {
@@ -164,9 +160,10 @@ class _VideoEditPageState extends State<VideoEditPage> {
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height,
                     ),
-              for (Widget elem in _localactivelist)
+              for (Map<String, dynamic> elem
+                  in context.read<ActiveWidget>().widgetlist)
                 WidgetItem(
-                  key: elem.key,
+                  key: elem['widget'].key,
                   onDragEnd: (offset, key) {
                     if ((offset.dy >
                             (MediaQuery.of(context).size.height - 100)) &&
@@ -175,13 +172,15 @@ class _VideoEditPageState extends State<VideoEditPage> {
                             (offset.dx >
                                 (MediaQuery.of(context).size.width * 0.4)))) {
                       setState(() {
-                        _localactivelist.removeWhere(
+                        Provider.of<ActiveWidget>(context, listen: false)
+                            .widgetlist
+                            .removeWhere(
                           (element) {
-                            if (element.key == Key('Music')) {
+                            if (element['widget'].key == Key('Music')) {
                               _audioplaying = false;
                               if (widget.video) _controller.setVolume(100);
                             }
-                            return element.key == key;
+                            return element['widget'].key == key;
                           },
                         );
                       });
@@ -211,7 +210,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
                       });
                     }
                   },
-                  widget: elem,
+                  widget: elem['widget'],
                 ),
               (_deleteButton)
                   ? Align(
@@ -360,7 +359,6 @@ class _VideoEditPageState extends State<VideoEditPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            print(outPath);
                             return OutputPage(video: File(outPath));
                           },
                         ),

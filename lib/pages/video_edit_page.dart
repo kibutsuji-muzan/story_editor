@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
+import 'package:flutter_edit_story/components/ProductModal.dart';
 import 'package:flutter_edit_story/pages/output_page.dart';
 import 'package:flutter_edit_story/var.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +37,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
   final List<Widget> _localactivelist = [];
   List<Song> songs = [];
   late String outPath;
+
   @override
   void initState() {
     super.initState();
@@ -128,8 +129,8 @@ class _VideoEditPageState extends State<VideoEditPage> {
       cmd =
           "-loop 1 -i ${widget.file.path} -c:v libx265 -crf 28 -t 15 -pix_fmt yuv420p -vf scale=320:240 $outPath";
     } else {
-      cmd =
-          '-i ${widget.file.path} -vcodec libx265 -crf 28 $outPath'; //need replacement
+      //need replacement
+      cmd = '-i ${widget.file.path} -vcodec libx265 -crf 28 $outPath';
     }
     await FFmpegKit.execute(cmd).then((value) => debugPrint(cmd));
   }
@@ -312,6 +313,28 @@ class _VideoEditPageState extends State<VideoEditPage> {
                         splashColor: Colors.white,
                         icon: const Icon(
                           Icons.library_music_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
+                      IconButton(
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.black26,
+                        ),
+                        onPressed: () => showModalBottomSheet(
+                          context: context,
+                          backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+                          isScrollControlled: true,
+                          builder: (context) {
+                            return ProductModal(
+                              notifyParent: refresh,
+                            );
+                          },
+                        ),
+                        splashColor: Colors.white,
+                        icon: Icon(
+                          (Provider.of<SelectedProduct>(context).productId != 0)
+                              ? Icons.shopping_cart_rounded
+                              : Icons.shopping_cart_outlined,
                           color: Colors.white,
                         ),
                       ),

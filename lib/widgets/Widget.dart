@@ -35,6 +35,7 @@ class _WidgetItemState extends State<WidgetItem> {
       },
       child: MatrixGestureDetector(
         onMatrixUpdate: (m, tm, sm, rm) {
+          //should save m in provider for positioning in sttory
           notifier.value = m;
         },
         onScaleStart: () {

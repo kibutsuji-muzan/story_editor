@@ -91,6 +91,17 @@ class VideoDurationModel extends ChangeNotifier {
   }
 }
 
+class SelectedProduct extends ChangeNotifier {
+  int _productId = 0;
+
+  int get productId => _productId;
+
+  void setProductId(int pId) {
+    _productId = pId;
+    notifyListeners(); // Notify listeners of the change
+  }
+}
+
 class TrimmedAudio extends ChangeNotifier {
   String _outputPath = '';
 
@@ -101,3 +112,54 @@ class TrimmedAudio extends ChangeNotifier {
     notifyListeners(); // Notify listeners of the change
   }
 }
+
+class ActiveWidget extends ChangeNotifier {
+  List<Map<String, dynamic>> _widgets = [];
+
+  List<Map<String, dynamic>> get widgetlist => _widgets;
+
+  void addWidget(Map<String, dynamic> widget) {
+    _widgets.add(widget);
+    notifyListeners();
+  }
+}
+
+class Product {
+  final int id;
+  final String name;
+  final double price;
+  final String image;
+  Product({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.image,
+  });
+}
+
+List<Map<String, dynamic>> products = [
+  {
+    "id": 1,
+    "name": "burger",
+    "price": 50.50,
+    "image": "assets/products/burger-p1.jpg"
+  },
+  {
+    "id": 2,
+    "name": "pizza",
+    "price": 150.25,
+    "image": "assets/products/pizza-p2.jpg"
+  },
+  {
+    "id": 3,
+    "name": "waffel",
+    "price": 200.30,
+    "image": "assets/products/waffel-p3.jpg"
+  },
+  {
+    "id": 4,
+    "name": "chai",
+    "price": 15,
+    "image": "assets/products/chai-p4.jpg"
+  },
+];

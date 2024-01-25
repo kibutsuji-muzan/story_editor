@@ -6,9 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_edit_story/pages/video_edit_page.dart';
 
 class CameraPage extends StatefulWidget {
-  const CameraPage({Key? key, required this.cameras}) : super(key: key);
-
-  final List<CameraDescription>? cameras;
+  const CameraPage({Key? key}) : super(key: key);
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -21,29 +19,27 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   bool _recorging = false;
   Timer? _timer;
   int _counter = 0;
-
-  @override
-  void dispose() {
-    _cameraController.dispose();
-    _timer?.cancel();
-    _animController.dispose();
-    super.dispose();
-  }
+  late final List<CameraDescription>? cameras;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) => _counter_func());
-    initCamera(widget.cameras![0]);
 
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 60),
-    )..addListener(() {
-        setState(() {});
-      });
-    _animController.repeat(reverse: true);
-    _animController.stop();
+    availableCameras().then((value) {
+      setState(() => cameras = value);
+      _timer =
+          Timer.periodic(Duration(seconds: 1), (Timer t) => _counter_func());
+      initCamera(cameras![0]);
+
+      _animController = AnimationController(
+        vsync: this,
+        duration: const Duration(seconds: 60),
+      )..addListener(() {
+          setState(() {});
+        });
+      _animController.repeat(reverse: true);
+      _animController.stop();
+    });
   }
 
   void _counter_func() {
@@ -128,6 +124,14 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    _cameraController.dispose();
+    _timer?.cancel();
+    _animController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -185,8 +189,7 @@ class _CameraPageState extends State<CameraPage> with TickerProviderStateMixin {
                         onPressed: () {
                           setState(() =>
                               _isRearCameraSelected = !_isRearCameraSelected);
-                          initCamera(
-                              widget.cameras![_isRearCameraSelected ? 0 : 1]);
+                          initCamera(cameras![_isRearCameraSelected ? 0 : 1]);
                         },
                       ),
                     ),

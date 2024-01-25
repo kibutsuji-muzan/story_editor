@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 
 import 'package:jiosaavn/jiosaavn.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class MusicModal extends StatefulWidget {
@@ -84,6 +82,7 @@ class _MusicModalState extends State<MusicModal> {
   @override
   void dispose() {
     _player.dispose();
+    print('hello');
     super.dispose();
   }
 

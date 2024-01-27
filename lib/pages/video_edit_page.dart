@@ -98,7 +98,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
     for (var song in res) {
       songs.add(
         Song(
-          songId: song['id'],
+          link: song['id'],
           title: song['title'],
           thumbnail: song['image'],
           subtitle: song['subtitle'],

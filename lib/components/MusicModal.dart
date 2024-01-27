@@ -64,7 +64,7 @@ class _MusicModalState extends State<MusicModal> {
       setState(() {
         _searched.add(
           Song(
-            songId: song.downloadUrl![0].link,
+            link: song.downloadUrl![0].link,
             thumbnail: song.image![0].link,
             title: song.name!,
             subtitle: song.primaryArtists,
@@ -182,8 +182,8 @@ class _MusicModalState extends State<MusicModal> {
                                 : _searched[index].subtitle,
                             setplaying: setnowplaying,
                             songVideoId: _searched.isEmpty
-                                ? widget.songs[index].songId
-                                : _searched[index].songId,
+                                ? widget.songs[index].link
+                                : _searched[index].link,
                           );
                         },
                       ),

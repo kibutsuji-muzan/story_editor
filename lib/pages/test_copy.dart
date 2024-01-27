@@ -24,14 +24,7 @@ class _TestPageState extends State<TestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: MusicWidget(
-        url:
-            'https://aac.saavncdn.com/773/6e69a112de89c7655116dcf400019f9c_12.mp4',
-        title: 'title',
-        thumbnail:
-            'https://c.saavncdn.com/433/Shikayat-Hindi-2023-20231214181447-150x150.jpg',
-        subtitle: 'subtitle',
-      ),
+      body: Text('Product Page'),
     );
   }
 }
@@ -105,7 +98,7 @@ class _MusicWidgetState extends State<MusicWidget> {
           behavior: HitTestBehavior.translucent,
           child: Hero(
             tag: widget.title,
-            child: _WidgetMusic(
+            child: WidgetMusic(
               title: widget.title,
               thumbnail: widget.thumbnail,
               subtitle: widget.subtitle,
@@ -232,7 +225,7 @@ class _TrimmingPageState extends State<_TrimmingPage> {
             children: [
               Hero(
                 tag: widget.title,
-                child: _WidgetMusic(
+                child: WidgetMusic(
                   title: widget.title,
                   thumbnail: widget.thumbnail,
                   subtitle: widget.subtitle,
@@ -297,11 +290,11 @@ class _TrimmingPageState extends State<_TrimmingPage> {
   }
 }
 
-class _WidgetMusic extends StatelessWidget {
+class WidgetMusic extends StatelessWidget {
   String title;
   String thumbnail;
   String subtitle;
-  _WidgetMusic({
+  WidgetMusic({
     super.key,
     required this.title,
     required this.thumbnail,

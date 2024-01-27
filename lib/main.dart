@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/pages/home_page.dart';
-import 'package:flutter_edit_story/pages/video_edit_page.dart';
-import 'package:flutter_edit_story/widgets/ProcutWidget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_edit_story/var.dart';
-import 'package:camera/camera.dart';
-import 'package:flutter_edit_story/pages/camera_page.dart';
 
 void main() {
   runApp(
@@ -36,43 +32,12 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Inter',
       ),
       // home: const HomePage(),
-      home: VideoEditPage(
-        file: XFile('assets/video.mp4'),
-        video: true,
-      ),
+      home: const HomePage(),
+      // home: VideoEditPage(
+      //   file: XFile('assets/video.mp4'),
+      //   video: true,
+      // ),
     );
   }
 }
-
-// class HomePage extends StatefulWidget {
-//   const HomePage({Key? key}) : super(key: key);
-
-//   @override
-//   State<HomePage> createState() => _HomePageState();
-// }
-
-// class _HomePageState extends State<HomePage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("Home Page")),
-//       body: SafeArea(
-//         child: Center(
-//           child: ElevatedButton(
-//             onPressed: () async {
-//               await availableCameras().then(
-//                 (value) => Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (_) => CameraPage(),
-//                   ),
-//                 ),
-//               );
-//             },
-//             child: const Text("Take a Picture"),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+// [1.4246864920636282, -1.0686063327775563, 0.0, 0.0, 1.0686063327775563, 1.4246864920636282, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -363.5059088816478, 295.83831994799834, 0.0, 1.0]

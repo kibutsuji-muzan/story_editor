@@ -50,9 +50,7 @@ class _MusicWidgetState extends State<MusicWidget> {
   }
 
   void playSong({required File file}) async {
-    print(_player);
     await _player.setFilePath(file.path);
-    print('hello have a cup cake!! ${file.path}');
     _player.setLoopMode(LoopMode.one);
     _player.play();
   }
@@ -127,8 +125,8 @@ class _TrimmingPage extends StatefulWidget {
 }
 
 class _TrimmingPageState extends State<_TrimmingPage> {
-  Duration _startValue = Duration(milliseconds: 0);
-  Duration _endValue = Duration(milliseconds: 0);
+  Duration _startValue = const Duration(milliseconds: 0);
+  Duration _endValue = const Duration(milliseconds: 0);
 
   final Trimmer _trimmer = Trimmer();
   // late File _file;

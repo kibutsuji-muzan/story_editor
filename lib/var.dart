@@ -31,13 +31,13 @@ List allWidgetsList = [
 ];
 
 class Song {
-  final String songId;
+  final String link;
   final String title;
   final String thumbnail;
   final String subtitle;
 
   const Song({
-    required this.songId,
+    required this.link,
     required this.title,
     required this.thumbnail,
     required this.subtitle,
@@ -46,13 +46,13 @@ class Song {
   factory Song.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'songId': String songId,
+        'link': String link,
         'title': String title,
         'thumbnail': String thumbnail,
         'subtitle': String subtitle,
       } =>
         Song(
-          songId: songId,
+          link: link,
           title: title,
           thumbnail: thumbnail,
           subtitle: subtitle,
@@ -176,5 +176,125 @@ List<Map<String, dynamic>> products = [
     "name": "chai",
     "price": 15,
     "image": "assets/products/chai-p4.jpg"
+  },
+];
+
+List<Map<String, dynamic>> storyData = [
+  {
+    'id': '1',
+    'video': 'assets/video1.mp4',
+    'thumbnail': 'assets/products/chai-p4.jpg',
+    'user': {'username': 'Sotoru Gojo', 'profilepic': 'assets/avatar.jpg'},
+    'widgets': [
+      {
+        'widget': const Key('music'),
+        'position': List<double>.filled(16, 0),
+        'link':
+            'https://aac.saavncdn.com/433/5d0773379e72eb85562c91b3b193d4e0_12.mp4',
+        'title': 'Shikayat',
+        'subtitle': 'AUR(Aurora) Shikayat',
+        'thumbnail':
+            'https://lh3.googleusercontent.com/6POdzxQK3GVk1MhxMa8KvMCl-9h44-J-9Hj7XJpQf3sfH6NMERuBQhLjD5pDRH0v3g-_H2Qw0emWK9Y=w544-h544-l90-rj',
+      },
+      {
+        'widget': const Key('polls'),
+        'position': <double>[
+          1.4246864920636282,
+          -1.0686063327775563,
+          0.0,
+          0.0,
+          1.0686063327775563,
+          1.4246864920636282,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          -363.5059088816478,
+          295.83831994799834,
+          0.0,
+          1.0
+        ],
+      },
+    ],
+  },
+  {
+    'id': '2',
+    'video': 'assets/video1.mp4',
+    'thumbnail': 'assets/products/pizza-p2.jpg',
+    'user': {'username': 'Sotoru Gojo', 'profilepic': 'assets/avatar.jpg'},
+    'widgets': [
+      {
+        'widget': const Key('music'),
+        'position': List<double>.filled(16, 0),
+        'link':
+            'https://aac.saavncdn.com/433/5d0773379e72eb85562c91b3b193d4e0_12.mp4',
+        'title': 'Shikayat',
+        'subtitle': 'AUR(Aurora) Shikayat',
+        'thumbnail':
+            'https://lh3.googleusercontent.com/6POdzxQK3GVk1MhxMa8KvMCl-9h44-J-9Hj7XJpQf3sfH6NMERuBQhLjD5pDRH0v3g-_H2Qw0emWK9Y=w544-h544-l90-rj',
+      },
+      {
+        'widget': const Key('polls'),
+        'position': <double>[
+          1.4246864920636282,
+          -1.0686063327775563,
+          0.0,
+          0.0,
+          1.0686063327775563,
+          1.4246864920636282,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          -363.5059088816478,
+          295.83831994799834,
+          0.0,
+          1.0
+        ],
+      },
+    ],
+  },
+  {
+    'id': '3',
+    'video': 'assets/video1.mp4',
+    'thumbnail': 'assets/products/waffel-p3.jpg',
+    'user': {'username': 'Sotoru Gojo', 'profilepic': 'assets/avatar.jpg'},
+    'widgets': [
+      {
+        'widget': const Key('music'),
+        'position': List<double>.filled(16, 0),
+        'link':
+            'https://aac.saavncdn.com/433/5d0773379e72eb85562c91b3b193d4e0_12.mp4',
+        'title': 'Shikayat',
+        'subtitle': 'AUR(Aurora) Shikayat',
+        'thumbnail':
+            'https://lh3.googleusercontent.com/6POdzxQK3GVk1MhxMa8KvMCl-9h44-J-9Hj7XJpQf3sfH6NMERuBQhLjD5pDRH0v3g-_H2Qw0emWK9Y=w544-h544-l90-rj',
+      },
+      {
+        'widget': const Key('polls'),
+        'position': <double>[
+          1.4246864920636282,
+          -1.0686063327775563,
+          0.0,
+          0.0,
+          1.0686063327775563,
+          1.4246864920636282,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          -363.5059088816478,
+          295.83831994799834,
+          0.0,
+          1.0
+        ],
+      },
+    ],
   },
 ];

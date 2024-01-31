@@ -6,6 +6,7 @@ import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 enum grp { Yes, No }
 
 chooseWidget(Widget item) {
+  print(item);
   switch (item) {
     case PollsWidget():
       return PollsWidget(key: UniqueKey());
@@ -13,7 +14,6 @@ chooseWidget(Widget item) {
       return SvgPicture.asset(
         key: UniqueKey(),
         'assets/sticker.svg',
-        width: 100,
       );
     case MusicWidget():
       return item;
@@ -298,3 +298,4 @@ List<Map<String, dynamic>> storyData = [
     ],
   },
 ];
+// [{widget: SvgPicture-[#09427]("SvgAssetLoader(assets/sticker.svg)", width: 100.0, clipBehavior: hardEdge, colorFilter: "null"), position: [3.8384288755111897, -1.6056475134784047, 0.0, 0.0, 1.6056475134784047, 3.8384288755111897, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -974.3599786209925, -240.66318736796813, 0.0, 1.0]}, {widget: MusicWidget-[<'Music'>], position: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -59.71540178571428, -107.70145089285717, 0.0, 1.0]}]

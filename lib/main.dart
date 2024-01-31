@@ -1,5 +1,7 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/pages/home_page.dart';
+import 'package:flutter_edit_story/pages/video_edit_page.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_edit_story/var.dart';
 
@@ -32,11 +34,11 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Inter',
       ),
       // home: const HomePage(),
-      home: const HomePage(),
-      // home: VideoEditPage(
-      //   file: XFile('assets/video.mp4'),
-      //   video: true,
-      // ),
+      // home: const HomePage(),
+      home: VideoEditPage(
+        file: XFile('assets/video.mp4'),
+        video: true,
+      ),
     );
   }
 }

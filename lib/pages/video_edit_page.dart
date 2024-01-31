@@ -6,13 +6,13 @@ import 'package:flutter_edit_story/components/MusicModal.dart';
 import 'package:flutter_edit_story/components/ProductModal.dart';
 import 'package:flutter_edit_story/pages/output_page.dart';
 import 'package:flutter_edit_story/var.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:provider/provider.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_edit_story/components/ScrollModal.dart';
 import 'package:flutter_edit_story/widgets/Widget.dart';
 import 'package:flutter_edit_story/API/saavan.dart' as savaanApi;
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:path_provider/path_provider.dart';
 
 class VideoEditPage extends StatefulWidget {
   XFile file;
@@ -36,10 +36,14 @@ class _VideoEditPageState extends State<VideoEditPage> {
   bool _deleteButtonActive = false;
   List<Song> songs = [];
   late String outPath;
+  late Subscription _subscription;
 
   @override
   void initState() {
     super.initState();
+    _subscription = VideoCompress.compressProgress$.subscribe((progress) {
+      debugPrint('progress: $progress');
+    });
     if (widget.video) {
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.file.path),
@@ -74,9 +78,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
     setState(() {});
 
     if (item.key == const Key('Music')) {
-      setState(() {
-        _audioplaying = true;
-      });
+      setState(() => _audioplaying = true);
       _controller.setVolume(0);
     }
   }
@@ -107,28 +109,53 @@ class _VideoEditPageState extends State<VideoEditPage> {
     }
   }
 
+  Future getthumbnail(String videopath) async {
+    final thumbnailFile = await VideoCompress.getFileThumbnail(
+      videopath,
+      quality: 50,
+      position: -1,
+    );
+  }
+
+  Future compressvideo(String videopath, bool audio) async {
+    var mediaInfo = await VideoCompress.compressVideo(
+      videopath,
+      quality: VideoQuality.LowQuality,
+      deleteOrigin: false,
+      includeAudio: audio,
+    );
+    setState(() {
+      outPath = mediaInfo!.file!.path;
+    });
+    return mediaInfo!.file!.path;
+  }
+
+  Future<XFile?> compressimage(String path, String targetPath) async {
+    var result = await FlutterImageCompress.compressAndGetFile(
+      path,
+      targetPath,
+      quality: 50,
+      rotate: 0,
+    );
+
+    return result;
+  }
+
   Future<void> saveVideo() async {
     print(Provider.of<ActiveWidget>(context, listen: false).widgetlist);
-    Directory tempDir = await getTemporaryDirectory();
-    var audio = Provider.of<TrimmedAudio>(context, listen: false).outputPath;
-    setState(() {
-      outPath = '${tempDir.path}/result.mp4';
-    });
-    String cmd = '';
-    if (_audioplaying && widget.video) {
-      cmd =
-          "-i ${widget.file.path} -i $audio -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 $outPath";
-    } else if (_audioplaying) {
-      cmd = "-loop 1 -i ${widget.file.path} -i $audio -shortest $outPath";
-    } else if (!widget.video) {
-      //need replacement
-      cmd =
-          "-loop 1 -i ${widget.file.path} -c:v libx265 -crf 28 -t 15 -pix_fmt yuv420p -vf scale=320:240 $outPath";
-    } else {
-      //need replacement
-      cmd = '-i ${widget.file.path} -vcodec libx265 -crf 28 $outPath';
-    }
-    await FFmpegKit.execute(cmd).then((value) => debugPrint(cmd));
+    // Directory tempDir = await getTemporaryDirectory();
+    // setState(() {
+    //   outPath = '${tempDir.path}/result.jpg';
+    // });
+    // getthumbnail(widget.file.path);
+
+    // if (_audioplaying && widget.video) {
+    //   await compressvideo(widget.file.path, false);
+    // } else if (!widget.video) {
+    //   await compressimage(widget.file.path, outPath);
+    // } else {
+    //   await compressvideo(widget.file.path, true);
+    // }
   }
 
   @override
@@ -137,6 +164,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
       _controller.dispose();
     }
     super.dispose();
+    _subscription.unsubscribe();
   }
 
   @override
@@ -176,7 +204,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
                             .widgetlist
                             .removeWhere(
                           (element) {
-                            if (element['widget'].key == Key('Music')) {
+                            if (element['widget'].key == const Key('Music')) {
                               _audioplaying = false;
                               if (widget.video) _controller.setVolume(100);
                             }

@@ -245,10 +245,11 @@ class _SongWidgetState extends State<SongWidget> {
     String url = await getUri();
     widget.addwidget(
       MusicWidget(
-          url: url,
-          title: widget.title,
-          thumbnail: widget.thumbnail,
-          subtitle: widget.subtitle),
+        url: url,
+        title: widget.title,
+        thumbnail: widget.thumbnail,
+        subtitle: widget.subtitle,
+      ),
     );
   }
 

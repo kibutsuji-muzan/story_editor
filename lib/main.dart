@@ -34,11 +34,11 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Inter',
       ),
       // home: const HomePage(),
-      // home: const HomePage(),
-      home: VideoEditPage(
-        file: XFile('assets/video.mp4'),
-        video: true,
-      ),
+      home: const HomePage(),
+      // home: VideoEditPage(
+      //   file: XFile('assets/video.mp4'),
+      //   video: true,
+      // ),
     );
   }
 }

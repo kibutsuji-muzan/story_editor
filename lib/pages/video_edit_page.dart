@@ -4,9 +4,12 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
 import 'package:flutter_edit_story/components/ProductModal.dart';
+import 'package:flutter_edit_story/pages/home_page.dart';
 import 'package:flutter_edit_story/pages/output_page.dart';
 import 'package:flutter_edit_story/var.dart';
+import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
@@ -86,7 +89,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
   void removeMusic() {
     setState(() {
       Provider.of<ActiveWidget>(context, listen: false)
-          .removeKey(key: const Key('Music'));
+          .removeKey(key: const Key('music'));
       setState(() {
         _audioplaying = false;
       });
@@ -143,19 +146,44 @@ class _VideoEditPageState extends State<VideoEditPage> {
 
   Future<void> saveVideo() async {
     print(Provider.of<ActiveWidget>(context, listen: false).widgetlist);
-    // Directory tempDir = await getTemporaryDirectory();
-    // setState(() {
-    //   outPath = '${tempDir.path}/result.jpg';
-    // });
-    // getthumbnail(widget.file.path);
+    Directory tempDir = await getTemporaryDirectory();
+    setState(() {
+      outPath = '${tempDir.path}/result.jpg';
+    });
+    getthumbnail(widget.file.path);
 
-    // if (_audioplaying && widget.video) {
-    //   await compressvideo(widget.file.path, false);
-    // } else if (!widget.video) {
-    //   await compressimage(widget.file.path, outPath);
-    // } else {
-    //   await compressvideo(widget.file.path, true);
-    // }
+    if (_audioplaying && widget.video) {
+      await compressvideo(widget.file.path, false);
+    } else if (!widget.video) {
+      await compressimage(widget.file.path, outPath);
+    } else {
+      await compressvideo(widget.file.path, true);
+    }
+  }
+
+  Widget widgetchooser(
+    Key widget,
+    String link,
+    Key key,
+    String title,
+    String thumbnail,
+    String subtitle,
+  ) {
+    switch (widget) {
+      case const Key('gif'):
+        return Image.network(key: key, link);
+      case const Key('sticker'):
+        return Image.network(key: key, link);
+      case const Key('music'):
+        return MusicWidget(
+          url: link,
+          title: title,
+          thumbnail: thumbnail,
+          subtitle: subtitle,
+        );
+      default:
+        return const Text('data');
+    }
   }
 
   @override
@@ -189,9 +217,9 @@ class _VideoEditPageState extends State<VideoEditPage> {
                       height: MediaQuery.of(context).size.height,
                     ),
               for (Map<String, dynamic> elem
-                  in context.read<ActiveWidget>().widgetlist)
+                  in context.watch<ActiveWidget>().widgetlist)
                 WidgetItem(
-                  key: elem['widget'].key,
+                  key: elem['key'],
                   onDragEnd: (offset, key) {
                     if ((offset.dy >
                             (MediaQuery.of(context).size.height - 100)) &&
@@ -204,11 +232,11 @@ class _VideoEditPageState extends State<VideoEditPage> {
                             .widgetlist
                             .removeWhere(
                           (element) {
-                            if (element['widget'].key == const Key('Music')) {
+                            if (element['key'] == const Key('Music')) {
                               _audioplaying = false;
                               if (widget.video) _controller.setVolume(100);
                             }
-                            return element['widget'].key == key;
+                            return element['key'] == key;
                           },
                         );
                       });
@@ -238,7 +266,14 @@ class _VideoEditPageState extends State<VideoEditPage> {
                       });
                     }
                   },
-                  widget: elem['widget'],
+                  widget: widgetchooser(
+                    elem['widget'],
+                    elem['link'],
+                    elem['key'],
+                    elem['title'] ?? '',
+                    elem['thumbnail'] ?? '',
+                    elem['subtitle'] ?? '',
+                  ),
                 ),
               (_deleteButton)
                   ? Align(
@@ -387,7 +422,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return OutputPage(video: File(outPath));
+                            return const HomePage();
                           },
                         ),
                       ),

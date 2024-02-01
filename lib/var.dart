@@ -125,7 +125,7 @@ class ActiveWidget extends ChangeNotifier {
   }
 
   void removeKey({required Key key}) {
-    _widgets.removeWhere((element) => element['widget'].key == key);
+    _widgets.removeWhere((element) => element['key'] == key);
     notifyListeners();
   }
 

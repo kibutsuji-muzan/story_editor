@@ -243,14 +243,7 @@ class _SongWidgetState extends State<SongWidget> {
 
   Future<void> sendNotif() async {
     String url = await getUri();
-    widget.addwidget(
-      MusicWidget(
-        url: url,
-        title: widget.title,
-        thumbnail: widget.thumbnail,
-        subtitle: widget.subtitle,
-      ),
-    );
+    print(url);
   }
 
   Future<void> _getUrl(BuildContext ctx) async {
@@ -262,8 +255,24 @@ class _SongWidgetState extends State<SongWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         sendNotif();
+        print({
+          'widget': const Key('music'),
+          'key': const Key('music'),
+          'link': widget.songVideoId,
+          'title': widget.title,
+          'thumbnail': widget.thumbnail,
+          'subtitle': widget.subtitle,
+        });
+        Provider.of<ActiveWidget>(context, listen: false).addWidget({
+          'widget': const Key('music'),
+          'key': const Key('music'),
+          'link': await getUri(),
+          'title': widget.title,
+          'thumbnail': widget.thumbnail,
+          'subtitle': widget.subtitle,
+        });
         Navigator.of(context).pop();
       },
       child: Container(

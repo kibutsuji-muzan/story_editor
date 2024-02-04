@@ -3,10 +3,12 @@ import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 
+const String domain = 'f5bc-103-211-19-149.ngrok-free.app';
+const String token = '1|QxCMprDaMvMRGkNLpYb5rh6sPOF5aRoV9WN1Q4s21c074e06';
+
 enum grp { Yes, No }
 
 chooseWidget(Widget item) {
-  print(item);
   switch (item) {
     case PollsWidget():
       return PollsWidget(key: UniqueKey());
@@ -104,11 +106,20 @@ class SelectedProduct extends ChangeNotifier {
 
 class TrimmedAudio extends ChangeNotifier {
   String _outputPath = '';
+  int _start = 0;
+  int _end = 0;
 
   String get outputPath => _outputPath;
+  Map get trimmedVal => {'start': _start, 'end': _end};
 
   void setOutputPath(String path) {
     _outputPath = path;
+    notifyListeners(); // Notify listeners of the change
+  }
+
+  void setTrimmedVal(int start, int end) {
+    _start = start;
+    _end = end;
     notifyListeners(); // Notify listeners of the change
   }
 }
@@ -129,24 +140,48 @@ class ActiveWidget extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeAll() {
+    _widgets.clear();
+    notifyListeners();
+  }
+
   void updatePosition({required Key key, required Matrix4 matrix}) {
     List<num> mat = List<num>.filled(16, 0, growable: false);
     matrix.copyIntoArray(mat);
-    _widgets
-        .where((element) => element['widget'].key == key)
-        .first['position'] = mat;
+    _widgets.where((element) => element['key'] == key).first['position'] = mat;
     notifyListeners();
+  }
+}
+
+class CustomClass {
+  List<Map<String, dynamic>> widgets;
+  CustomClass({required this.widgets});
+
+  static Map<String, dynamic> toJson({required Map<String, dynamic> val}) {
+    Map<String, dynamic> json = {};
+    val.forEach((key, value) {
+      if (value is Key) {
+        json[key] = value.toString();
+      } else {
+        json[key] = value;
+      }
+    });
+    return json;
   }
 }
 
 class Product {
   final int id;
+  final String userid;
   final String name;
+  final String desc;
   final double price;
   final String image;
   Product({
     required this.id,
+    required this.userid,
     required this.name,
+    required this.desc,
     required this.price,
     required this.image,
   });

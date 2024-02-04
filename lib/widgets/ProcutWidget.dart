@@ -76,7 +76,7 @@ class _ProductWidgetState extends State<ProductWidget>
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
+                      child: Image.network(
                         widget.product.image, // Replace with your image URL
                         height: 150.0,
                         width: double.infinity,
@@ -95,9 +95,10 @@ class _ProductWidgetState extends State<ProductWidget>
                           ),
                         ),
                         const SizedBox(height: 8.0),
-                        const Text(
-                          'Product Description Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                          style: TextStyle(fontSize: 16.0),
+                        Text(
+                          widget.product.desc,
+                          // 'Product Description Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                          style: const TextStyle(fontSize: 16.0),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                         ),
@@ -110,7 +111,8 @@ class _ProductWidgetState extends State<ProductWidget>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                    'Buy: \$ ${widget.product.price.toDouble()}'),
+                                  'Buy: \$ ${widget.product.price.toDouble()}',
+                                ),
                               ],
                             ),
                           ),

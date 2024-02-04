@@ -1,240 +1,262 @@
-{
-    "albums": {
-        "data": [
-            {
-                "id": "50465175",
-                "title": "Shikayat",
-                "subtitle": "",
-                "type": "album",
-                "image": "https:\/\/c.saavncdn.com\/433\/Shikayat-Hindi-2023-20231214181447-150x150.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/album\/shikayat\/SIXm-7pg3IM_",
-                "more_info": {
-                    "music": "AUR",
-                    "ctr": 6554,
-                    "year": "2023",
-                    "is_movie": "",
-                    "language": "hindi",
-                    "song_pids": "bu1qvBOf"
+[
+    {
+        "albums": {
+            "data": [
+                {
+                    "id": "50465175",
+                    "title": "Shikayat",
+                    "subtitle": "",
+                    "type": "album",
+                    "image": "https:\/\/c.saavncdn.com\/433\/Shikayat-Hindi-2023-20231214181447-150x150.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/album\/shikayat\/SIXm-7pg3IM_",
+                    "more_info": {
+                        "music": "AUR",
+                        "ctr": 6554,
+                        "year": "2023",
+                        "is_movie": "",
+                        "language": "hindi",
+                        "song_pids": "bu1qvBOf"
+                    },
+                    "explicit_content": "0",
+                    "mini_obj": true,
+                    "description": "2023 \u00b7 Hindi Album \u00b7 AUR"
                 },
-                "explicit_content": "0",
-                "mini_obj": true,
-                "description": "2023 \u00b7 Hindi Album \u00b7 AUR"
-            },
-            {
-                "id": "21410240",
-                "title": "Shikayat",
-                "subtitle": "",
-                "type": "album",
-                "image": "https:\/\/c.saavncdn.com\/179\/Shikayat-Hindi-2020-20200714000532-150x150.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/album\/shikayat\/BHWoseoMw-M_",
-                "more_info": {
-                    "music": "Ved Sharma",
-                    "ctr": 9,
-                    "year": "2020",
-                    "is_movie": "",
-                    "language": "hindi",
-                    "song_pids": "BULbIuHI"
+                {
+                    "id": "21410240",
+                    "title": "Shikayat",
+                    "subtitle": "",
+                    "type": "album",
+                    "image": "https:\/\/c.saavncdn.com\/179\/Shikayat-Hindi-2020-20200714000532-150x150.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/album\/shikayat\/BHWoseoMw-M_",
+                    "more_info": {
+                        "music": "Ved Sharma",
+                        "ctr": 9,
+                        "year": "2020",
+                        "is_movie": "",
+                        "language": "hindi",
+                        "song_pids": "BULbIuHI"
+                    },
+                    "explicit_content": "0",
+                    "mini_obj": true,
+                    "description": "2020 \u00b7 Hindi Album \u00b7 Ved Sharma"
                 },
-                "explicit_content": "0",
-                "mini_obj": true,
-                "description": "2020 \u00b7 Hindi Album \u00b7 Ved Sharma"
-            },
-            {
-                "id": "16756406",
-                "title": "Shikayat",
-                "subtitle": "",
-                "type": "album",
-                "image": "https:\/\/c.saavncdn.com\/627\/Shikayat-Hindi-2019-20190729125620-150x150.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/album\/shikayat\/C4hSSiJM82c_",
-                "more_info": {
-                    "music": "Yawar, Raga",
+                {
+                    "id": "16756406",
+                    "title": "Shikayat",
+                    "subtitle": "",
+                    "type": "album",
+                    "image": "https:\/\/c.saavncdn.com\/627\/Shikayat-Hindi-2019-20190729125620-150x150.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/album\/shikayat\/C4hSSiJM82c_",
+                    "more_info": {
+                        "music": "Yawar, Raga",
+                        "ctr": 0,
+                        "year": "2019",
+                        "is_movie": "",
+                        "language": "hindi",
+                        "song_pids": "XfZqFCqL"
+                    },
+                    "explicit_content": "1",
+                    "mini_obj": true,
+                    "description": "2019 \u00b7 Hindi Album \u00b7 Yawar, Raga"
+                }
+            ],
+            "position": 1
+        },
+        "songs": {
+            "data": [
+                {
+                    "id": "bu1qvBOf",
+                    "title": "Shikayat",
+                    "subtitle": "",
+                    "type": "song",
+                    "image": "https:\/\/c.saavncdn.com\/433\/Shikayat-Hindi-2023-20231214181447-150x150.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/song\/shikayat\/Eh1aQAJyeFU",
+                    "more_info": {
+                        "album": "Shikayat",
+                        "ctr": 845,
+                        "score": "2037455",
+                        "vcode": "010910142170421",
+                        "vlink": "https:\/\/jiotunepreview.jio.com\/content\/Converted\/010910142126672.mp3",
+                        "primary_artists": "AUR",
+                        "singers": "AUR",
+                        "video_available": null,
+                        "triller_available": false,
+                        "language": "hindi"
+                    },
+                    "explicit_content": "0",
+                    "mini_obj": true,
+                    "description": "Shikayat \u00b7 AUR"
+                },
+                {
+                    "id": "BULbIuHI",
+                    "title": "Shikayat",
+                    "subtitle": "",
+                    "type": "song",
+                    "image": "https:\/\/c.saavncdn.com\/179\/Shikayat-Hindi-2020-20200714000532-150x150.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/song\/shikayat\/Mj0nUz1Ff3o",
+                    "more_info": {
+                        "album": "Shikayat",
+                        "ctr": 106,
+                        "score": "171006.2",
+                        "vcode": "010912291162264",
+                        "vlink": "https:\/\/jiotunepreview.jio.com\/content\/Converted\/010912291118730.mp3",
+                        "primary_artists": "Ved Sharma",
+                        "singers": "Ved Sharma",
+                        "video_available": null,
+                        "triller_available": false,
+                        "language": "hindi"
+                    },
+                    "explicit_content": "0",
+                    "mini_obj": true,
+                    "description": "Shikayat \u00b7 Ved Sharma"
+                },
+                {
+                    "id": "XfZqFCqL",
+                    "title": "Shikayat",
+                    "subtitle": "",
+                    "type": "song",
+                    "image": "https:\/\/c.saavncdn.com\/627\/Shikayat-Hindi-2019-20190729125620-150x150.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/song\/shikayat\/KA4xQDJzRn8",
+                    "more_info": {
+                        "album": "Shikayat",
+                        "ctr": 0,
+                        "score": "19207.89",
+                        "vcode": "010910140985368",
+                        "vlink": "https:\/\/jiotunepreview.jio.com\/content\/Converted\/010910140941039.mp3",
+                        "primary_artists": "Yawar, Raga",
+                        "singers": "Yawar, Yawar & Raga, Raga",
+                        "video_available": null,
+                        "triller_available": false,
+                        "language": "hindi"
+                    },
+                    "explicit_content": "1",
+                    "mini_obj": true,
+                    "description": "Shikayat \u00b7 Yawar, Raga"
+                }
+            ],
+            "position": 2
+        },
+        "playlists": {
+            "data": [],
+            "position": 3
+        },
+        "artists": {
+            "data": [
+                {
+                    "id": "9577394",
+                    "title": "Emc Shikayat",
+                    "image": "https:\/\/www.jiosaavn.com\/_i\/3.0\/artist-default-film.png",
+                    "extra": "",
+                    "type": "artist",
+                    "mini_obj": true,
+                    "isRadioPresent": false,
                     "ctr": 0,
-                    "year": "2019",
-                    "is_movie": "",
-                    "language": "hindi",
-                    "song_pids": "XfZqFCqL"
+                    "entity": 0,
+                    "description": "Artist",
+                    "position": 1
+                }
+            ],
+            "position": 4
+        },
+        "topquery": {
+            "data": [
+                {
+                    "id": "bu1qvBOf",
+                    "title": "Shikayat",
+                    "subtitle": "",
+                    "type": "song",
+                    "image": "https:\/\/c.saavncdn.com\/433\/Shikayat-Hindi-2023-20231214181447-150x150.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/song\/shikayat\/Eh1aQAJyeFU",
+                    "more_info": {
+                        "album": "Shikayat",
+                        "ctr": 845,
+                        "score": "2037455",
+                        "vcode": "010910142170421",
+                        "vlink": "https:\/\/jiotunepreview.jio.com\/content\/Converted\/010910142126672.mp3",
+                        "primary_artists": "AUR",
+                        "singers": "AUR",
+                        "video_available": null,
+                        "triller_available": false,
+                        "language": "hindi"
+                    },
+                    "explicit_content": "0",
+                    "mini_obj": true,
+                    "description": "Song by AUR"
+                }
+            ],
+            "position": 0
+        },
+        "shows": {
+            "data": [
+                {
+                    "id": "766",
+                    "title": "Navratri - Being Shakti",
+                    "subtitle": "",
+                    "type": "show",
+                    "image": "https:\/\/c.sop.saavncdn.com\/Day1-Episode-500x500.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/shows\/navratri-being-shakti\/1\/HRp27tIMIFc_",
+                    "more_info": {
+                        "season_number": 1
+                    },
+                    "explicit_content": "0",
+                    "mini_obj": true,
+                    "description": "Season 1"
                 },
-                "explicit_content": "1",
-                "mini_obj": true,
-                "description": "2019 \u00b7 Hindi Album \u00b7 Yawar, Raga"
+                {
+                    "id": "315550",
+                    "title": "Shakti Speaks",
+                    "subtitle": "",
+                    "type": "show",
+                    "image": "https:\/\/c.sop.saavncdn.com\/Shakti-Speaks-20221020045644-500x500.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/shows\/shakti-speaks\/1\/iHtsJpyRNNU_",
+                    "more_info": {
+                        "season_number": 1
+                    },
+                    "explicit_content": "0",
+                    "mini_obj": true,
+                    "description": "Season 1"
+                },
+                {
+                    "id": "221345",
+                    "title": "Mundo Chiquito",
+                    "subtitle": "",
+                    "type": "show",
+                    "image": "https:\/\/c.sop.saavncdn.com\/Mundo-Chiquito-20220726023138-500x500.jpg",
+                    "perma_url": "https:\/\/www.jiosaavn.com\/shows\/mundo-chiquito\/1\/oRB-KEzXAvE_",
+                    "more_info": {
+                        "season_number": 1
+                    },
+                    "explicit_content": "0",
+                    "mini_obj": true,
+                    "description": "Season 1"
+                }
+            ],
+            "position": 5
+        },
+        "episodes": {
+            "data": [],
+            "position": 6
+        }
+    },
+    {
+        "productid": 0,
+        "user": {
+            "username": "dummy",
+            "id": 5
+        },
+        "widgets": [
+            {
+                "widget": "[<'music'>]",
+                "key": "[<'music'>]",
+                "link": "https://aac.saavncdn.com/773/6e69a112de89c7655116dcf400019f9c_12.mp4",
+                "title": "Ishq Nachaawe",
+                "thumbnail": "https://c.saavncdn.com/773/Kho-Gaye-Hum-Kahan-Hindi-2023-20231208120916-500x500.jpg",
+                "subtitle": "Yashraj, Karan Kanchan, Rashmeet Kaur - Kho Gaye Hum Kahan",
+                "trim": {
+                    "start": 98955,
+                    "end": 158955
+                }
             }
-        ],
-        "position": 1
-    },
-    "songs": {
-        "data": [
-            {
-                "id": "bu1qvBOf",
-                "title": "Shikayat",
-                "subtitle": "",
-                "type": "song",
-                "image": "https:\/\/c.saavncdn.com\/433\/Shikayat-Hindi-2023-20231214181447-150x150.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/song\/shikayat\/Eh1aQAJyeFU",
-                "more_info": {
-                    "album": "Shikayat",
-                    "ctr": 845,
-                    "score": "2037455",
-                    "vcode": "010910142170421",
-                    "vlink": "https:\/\/jiotunepreview.jio.com\/content\/Converted\/010910142126672.mp3",
-                    "primary_artists": "AUR",
-                    "singers": "AUR",
-                    "video_available": null,
-                    "triller_available": false,
-                    "language": "hindi"
-                },
-                "explicit_content": "0",
-                "mini_obj": true,
-                "description": "Shikayat \u00b7 AUR"
-            },
-            {
-                "id": "BULbIuHI",
-                "title": "Shikayat",
-                "subtitle": "",
-                "type": "song",
-                "image": "https:\/\/c.saavncdn.com\/179\/Shikayat-Hindi-2020-20200714000532-150x150.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/song\/shikayat\/Mj0nUz1Ff3o",
-                "more_info": {
-                    "album": "Shikayat",
-                    "ctr": 106,
-                    "score": "171006.2",
-                    "vcode": "010912291162264",
-                    "vlink": "https:\/\/jiotunepreview.jio.com\/content\/Converted\/010912291118730.mp3",
-                    "primary_artists": "Ved Sharma",
-                    "singers": "Ved Sharma",
-                    "video_available": null,
-                    "triller_available": false,
-                    "language": "hindi"
-                },
-                "explicit_content": "0",
-                "mini_obj": true,
-                "description": "Shikayat \u00b7 Ved Sharma"
-            },
-            {
-                "id": "XfZqFCqL",
-                "title": "Shikayat",
-                "subtitle": "",
-                "type": "song",
-                "image": "https:\/\/c.saavncdn.com\/627\/Shikayat-Hindi-2019-20190729125620-150x150.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/song\/shikayat\/KA4xQDJzRn8",
-                "more_info": {
-                    "album": "Shikayat",
-                    "ctr": 0,
-                    "score": "19207.89",
-                    "vcode": "010910140985368",
-                    "vlink": "https:\/\/jiotunepreview.jio.com\/content\/Converted\/010910140941039.mp3",
-                    "primary_artists": "Yawar, Raga",
-                    "singers": "Yawar, Yawar & Raga, Raga",
-                    "video_available": null,
-                    "triller_available": false,
-                    "language": "hindi"
-                },
-                "explicit_content": "1",
-                "mini_obj": true,
-                "description": "Shikayat \u00b7 Yawar, Raga"
-            }
-        ],
-        "position": 2
-    },
-    "playlists": {
-        "data": [],
-        "position": 3
-    },
-    "artists": {
-        "data": [
-            {
-                "id": "9577394",
-                "title": "Emc Shikayat",
-                "image": "https:\/\/www.jiosaavn.com\/_i\/3.0\/artist-default-film.png",
-                "extra": "",
-                "type": "artist",
-                "mini_obj": true,
-                "isRadioPresent": false,
-                "ctr": 0,
-                "entity": 0,
-                "description": "Artist",
-                "position": 1
-            }
-        ],
-        "position": 4
-    },
-    "topquery": {
-        "data": [
-            {
-                "id": "bu1qvBOf",
-                "title": "Shikayat",
-                "subtitle": "",
-                "type": "song",
-                "image": "https:\/\/c.saavncdn.com\/433\/Shikayat-Hindi-2023-20231214181447-150x150.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/song\/shikayat\/Eh1aQAJyeFU",
-                "more_info": {
-                    "album": "Shikayat",
-                    "ctr": 845,
-                    "score": "2037455",
-                    "vcode": "010910142170421",
-                    "vlink": "https:\/\/jiotunepreview.jio.com\/content\/Converted\/010910142126672.mp3",
-                    "primary_artists": "AUR",
-                    "singers": "AUR",
-                    "video_available": null,
-                    "triller_available": false,
-                    "language": "hindi"
-                },
-                "explicit_content": "0",
-                "mini_obj": true,
-                "description": "Song by AUR"
-            }
-        ],
-        "position": 0
-    },
-    "shows": {
-        "data": [
-            {
-                "id": "766",
-                "title": "Navratri - Being Shakti",
-                "subtitle": "",
-                "type": "show",
-                "image": "https:\/\/c.sop.saavncdn.com\/Day1-Episode-500x500.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/shows\/navratri-being-shakti\/1\/HRp27tIMIFc_",
-                "more_info": {
-                    "season_number": 1
-                },
-                "explicit_content": "0",
-                "mini_obj": true,
-                "description": "Season 1"
-            },
-            {
-                "id": "315550",
-                "title": "Shakti Speaks",
-                "subtitle": "",
-                "type": "show",
-                "image": "https:\/\/c.sop.saavncdn.com\/Shakti-Speaks-20221020045644-500x500.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/shows\/shakti-speaks\/1\/iHtsJpyRNNU_",
-                "more_info": {
-                    "season_number": 1
-                },
-                "explicit_content": "0",
-                "mini_obj": true,
-                "description": "Season 1"
-            },
-            {
-                "id": "221345",
-                "title": "Mundo Chiquito",
-                "subtitle": "",
-                "type": "show",
-                "image": "https:\/\/c.sop.saavncdn.com\/Mundo-Chiquito-20220726023138-500x500.jpg",
-                "perma_url": "https:\/\/www.jiosaavn.com\/shows\/mundo-chiquito\/1\/oRB-KEzXAvE_",
-                "more_info": {
-                    "season_number": 1
-                },
-                "explicit_content": "0",
-                "mini_obj": true,
-                "description": "Season 1"
-            }
-        ],
-        "position": 5
-    },
-    "episodes": {
-        "data": [],
-        "position": 6
+        ]
     }
-}
-
+]

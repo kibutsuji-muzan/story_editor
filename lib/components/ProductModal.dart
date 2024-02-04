@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/var.dart';
 import 'package:flutter_edit_story/widgets/ProcutWidget.dart';
-import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class ProductModal extends StatefulWidget {
   Function notifyParent;
@@ -26,19 +28,52 @@ class _ProductModalState extends State<ProductModal> {
   }
 
   Future<void> fetch_data() async {
-    products.forEach(
-      (element) => setState(
-        () => _products.add(
+    var res = await http.get(
+      Uri.https(domain, '/api/get'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    var _product = jsonDecode(res.body);
+    // print(_product);
+    _product.forEach(
+      (element) => setState(() {
+        print(element['id'].runtimeType);
+        print([
+          element['id'].runtimeType,
+          element['user_id'].runtimeType,
+          element['name'].runtimeType,
+          element['price'].runtimeType,
+          element['desc'].runtimeType,
+          element['image']
+              .replaceAll('http', 'https')
+              .replaceAll('localhost', domain)
+              .runtimeType,
+        ]);
+        _products.add(
           Product(
-              id: element['id'],
-              name: element['name'],
-              price: element['price'],
-              image: element['image']),
-        ),
-      ),
+            id: element['id'],
+            userid: element['user_id'],
+            name: element['name'],
+            price: element['price'].toDouble(),
+            desc: element['desc'],
+            image: element['image']
+                .replaceAll('http', 'https')
+                .replaceAll('localhost', domain),
+          ),
+        );
+      }),
     );
   }
 
+// {
+//     "name": "pizza",
+//     "price": "200",
+//     "desc": "something something something",
+//     "image": "http://localhost/storage/users/OxK69Nf4StzOzb6WrpsjVjqq2NerHpZ4rtvPb5kl.jpg",
+//     "user_id": "satoru",
+//     "id": 2
+// }
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(

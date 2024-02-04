@@ -1,11 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_archive/flutter_archive.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
 import 'package:flutter_edit_story/components/ProductModal.dart';
 import 'package:flutter_edit_story/pages/home_page.dart';
-import 'package:flutter_edit_story/pages/output_page.dart';
 import 'package:flutter_edit_story/var.dart';
 import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -16,6 +17,8 @@ import 'package:video_player/video_player.dart';
 import 'package:flutter_edit_story/components/ScrollModal.dart';
 import 'package:flutter_edit_story/widgets/Widget.dart';
 import 'package:flutter_edit_story/API/saavan.dart' as savaanApi;
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 
 class VideoEditPage extends StatefulWidget {
   XFile file;
@@ -44,9 +47,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
   @override
   void initState() {
     super.initState();
-    _subscription = VideoCompress.compressProgress$.subscribe((progress) {
-      debugPrint('progress: $progress');
-    });
+
     if (widget.video) {
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.file.path),
@@ -113,52 +114,146 @@ class _VideoEditPageState extends State<VideoEditPage> {
   }
 
   Future getthumbnail(String videopath) async {
-    final thumbnailFile = await VideoCompress.getFileThumbnail(
+    await VideoCompress.getFileThumbnail(
       videopath,
       quality: 50,
       position: -1,
     );
   }
 
-  Future compressvideo(String videopath, bool audio) async {
-    var mediaInfo = await VideoCompress.compressVideo(
+  Future<String> compressvideo(
+    String videopath,
+    bool audio,
+    Directory sourceDir,
+  ) async {
+    _subscription = VideoCompress.compressProgress$.subscribe((progress) {
+      debugPrint('progress: $progress');
+    });
+    late File _file;
+    await VideoCompress.compressVideo(
       videopath,
       quality: VideoQuality.LowQuality,
       deleteOrigin: false,
       includeAudio: audio,
-    );
-    setState(() {
-      outPath = mediaInfo!.file!.path;
+    ).then((value) async {
+      _file = await value!.file!.copy('${sourceDir.path}/file.mp4');
+      value.file!.delete();
     });
-    return mediaInfo!.file!.path;
+    _subscription.unsubscribe();
+
+    return _file.path;
   }
 
-  Future<XFile?> compressimage(String path, String targetPath) async {
-    var result = await FlutterImageCompress.compressAndGetFile(
+  Future<String> compressimage(
+    String path,
+    String targetPath,
+    Directory sourceDir,
+  ) async {
+    String outPath = '${sourceDir.path}/file.jpg';
+    await FlutterImageCompress.compressAndGetFile(
       path,
       targetPath,
       quality: 50,
       rotate: 0,
-    );
+    ).then((value) async {
+      await value!.saveTo(outPath);
+      await File(value.path).delete();
+    });
 
-    return result;
+    return outPath;
   }
 
-  Future<void> saveVideo() async {
-    print(Provider.of<ActiveWidget>(context, listen: false).widgetlist);
-    Directory tempDir = await getTemporaryDirectory();
-    setState(() {
-      outPath = '${tempDir.path}/result.jpg';
-    });
-    getthumbnail(widget.file.path);
-
-    if (_audioplaying && widget.video) {
-      await compressvideo(widget.file.path, false);
-    } else if (!widget.video) {
-      await compressimage(widget.file.path, outPath);
-    } else {
-      await compressvideo(widget.file.path, true);
+  Future<File> _createZip(String json, String file, Directory sourceDir) async {
+    final files = [File(json), File(file)];
+    final zipFile = File('${sourceDir.path}/story.zip');
+    try {
+      ZipFile.createFromFiles(
+        sourceDir: sourceDir,
+        files: files,
+        zipFile: zipFile,
+      );
+    } catch (e) {
+      print(e);
     }
+    return zipFile;
+  }
+
+  Future<String> saveVideo(Directory tempDir) async {
+    if (_audioplaying && widget.video) {
+      await compressvideo(widget.file.path, false, tempDir)
+          .then((value) => setState(() => outPath = value));
+    } else if (!widget.video) {
+      await compressimage(
+              widget.file.path, '${tempDir.path}/result.jpg', tempDir)
+          .then((value) => setState(() => outPath = value));
+    } else {
+      await compressvideo(widget.file.path, true, tempDir)
+          .then((value) => setState(() => outPath = value));
+    }
+    return outPath;
+  }
+
+  Future<String> saveJson(String tempDir) async {
+    File _file = File('$tempDir/data.json');
+    List widgets = [];
+    Provider.of<ActiveWidget>(context, listen: false)
+        .widgetlist
+        .forEach((element) {
+      widgets.add(
+        CustomClass.toJson(
+          val: element,
+        ),
+      );
+    });
+    var j = {
+      'user': {'username': 'dummy', 'id': 5},
+      'widgets': widgets,
+    };
+    await _file.writeAsString(json.encode(j));
+    return _file.path;
+  }
+
+  Future<void> postStory() async {
+    Directory tempDir = await getTemporaryDirectory();
+    Directory workplace =
+        await Directory('${tempDir.path}/story').create(recursive: true);
+    String video = await saveVideo(workplace);
+    String json = await saveJson(workplace.path);
+    var file = await _createZip(
+      video,
+      json,
+      workplace,
+    );
+    await sendFile(file: file).then((value) {
+      Provider.of<SelectedProduct>(context, listen: false).setProductId(0);
+      Provider.of<ActiveWidget>(context, listen: false).removeAll();
+    });
+  }
+
+  Future<int> sendFile({required File file}) async {
+    int pid = Provider.of<SelectedProduct>(context, listen: false).productId;
+    print(file.path);
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.https(domain, '/api/story_upload'),
+    );
+    request.headers.addAll(
+      {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (pid != 0) request.fields['product_id'];
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'story',
+        file.readAsBytesSync(),
+        filename: path.basename(file.path),
+      ),
+    );
+    var res = await request.send();
+    var resp = await http.Response.fromStream(res);
+    print(resp.body);
+    return res.statusCode;
   }
 
   Widget widgetchooser(
@@ -192,7 +287,6 @@ class _VideoEditPageState extends State<VideoEditPage> {
       _controller.dispose();
     }
     super.dispose();
-    _subscription.unsubscribe();
   }
 
   @override
@@ -417,7 +511,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
                       ),
                       backgroundColor: Theme.of(context).canvasColor,
                     ),
-                    onPressed: () => saveVideo().then(
+                    onPressed: () => postStory().then(
                       (value) => Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

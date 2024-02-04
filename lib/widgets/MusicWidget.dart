@@ -176,8 +176,17 @@ class _TrimmingPageState extends State<_TrimmingPage> {
       var outPath = '${tempDir.path}/output.mp4';
       var cmd =
           "-y -i ${_trimmer.currentAudioFile?.path} -vn -ss ${_startValue} -to ${_endValue} -ar 16k -ac 2 -b:a 96k -acodec copy $outPath";
-      debugPrint(cmd);
       Provider.of<TrimmedAudio>(context, listen: false).setOutputPath(outPath);
+      Provider.of<ActiveWidget>(context, listen: false)
+          .widgetlist
+          .forEach((element) {
+        if (element['widget'] == const Key('music')) {
+          element['trim'] = {
+            'start': _startValue.inMilliseconds,
+            'end': _endValue.inMilliseconds
+          };
+        }
+      });
       await FFmpegKit.execute(cmd);
       debugPrint('hello have this cupcake $outPath');
     } catch (e) {

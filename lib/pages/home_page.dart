@@ -1,8 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
 import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_archive/flutter_archive.dart';
 import 'package:flutter_edit_story/pages/camera_page.dart';
 import 'package:flutter_edit_story/pages/story_page.dart';
 import 'package:flutter_edit_story/var.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,6 +25,68 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    var _res = await http.get(
+      Uri.https(domain, '/api/story_get'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    var res = jsonDecode(_res.body);
+    res.forEach((e) {
+      downloadZip(e['file']
+          .replaceAll('http', 'https')
+          .replaceAll('localhost', domain));
+    });
+  }
+
+  Future<File> downloadZip(String url) async {
+    Directory tempDir = await getTemporaryDirectory();
+    Directory dir = Directory('${tempDir.path}/stories');
+    dir.create(recursive: true);
+    HttpClient client = new HttpClient();
+    var _downloadData = <int>[];
+
+    var file = File('${dir.path}/${url.split('/').last}');
+
+    await client.getUrl(Uri.parse(url)).then((HttpClientRequest request) {
+      return request.close();
+    }).then((HttpClientResponse response) {
+      response.listen((d) => _downloadData.addAll(d), onDone: () {
+        file
+            .writeAsBytes(_downloadData)
+            .then((value) async => await _extractZip(file, dir.path));
+      });
+    });
+    return file;
+  }
+
+  Future<String> _extractZip(File zipFile, String dir) async {
+    print('hello');
+    final destinationDir =
+        Directory("$dir/${path.basename(zipFile.path).split('.')[0]}");
+    print(destinationDir);
+    try {
+      await ZipFile.extractToDirectory(
+          zipFile: zipFile,
+          destinationDir: destinationDir,
+          onExtracting: (zipEntry, progress) {
+            print('progress: ${progress.toStringAsFixed(1)}%');
+            print('name: ${zipEntry.name}');
+            print('isDirectory: ${zipEntry.isDirectory}');
+            print('uncompressedSize: ${zipEntry.uncompressedSize}');
+            print('compressedSize: ${zipEntry.compressedSize}');
+            print('compressionMethod: ${zipEntry.compressionMethod}');
+            print('crc: ${zipEntry.crc}');
+            return ZipFileOperation.includeItem;
+          });
+    } catch (e) {
+      print(e);
+    }
+    return destinationDir.path;
   }
 
   @override

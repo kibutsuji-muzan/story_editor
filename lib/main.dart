@@ -1,9 +1,10 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/pages/home_page.dart';
-import 'package:flutter_edit_story/pages/video_edit_page.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_edit_story/var.dart';
+
+import 'pages/video_edit_page.dart';
 
 void main() {
   runApp(

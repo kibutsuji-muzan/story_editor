@@ -12,19 +12,15 @@ import 'package:provider/provider.dart';
 
 final ValueNotifier<Matrix4> notifier = ValueNotifier(Matrix4.identity());
 
-class TestPage extends StatefulWidget {
-  const TestPage({super.key});
+class TestPage extends StatelessWidget {
+  int pid;
+  TestPage({super.key, required this.pid});
 
-  @override
-  State<TestPage> createState() => _TestPageState();
-}
-
-class _TestPageState extends State<TestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Text('Product Page'),
+      body: Text('Product Page $pid'),
     );
   }
 }

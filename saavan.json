@@ -258,5 +258,18 @@
                 }
             }
         ]
+    },
+    {
+        "id": 6,
+        "file": "http://localhost/storage/story/QeTKWQuTKAW9YLhOYkeZJsM7DP2EfNkHfnln3qvQ.zip",
+        "user_id": "satoru",
+        "product_id": null
+    },
+    {
+        "user": {
+            "username": "dummy",
+            "id": 5
+        },
+        "widgets": []
     }
 ]

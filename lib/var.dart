@@ -3,7 +3,7 @@ import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 
-const String domain = '18a6-103-211-19-238.ngrok-free.app';
+const String domain = '4dc4-103-211-19-214.ngrok-free.app';
 const String token = '1|QxCMprDaMvMRGkNLpYb5rh6sPOF5aRoV9WN1Q4s21c074e06';
 
 enum grp { Yes, No }

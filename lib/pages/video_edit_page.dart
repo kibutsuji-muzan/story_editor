@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
@@ -19,6 +20,8 @@ import 'package:flutter_edit_story/widgets/Widget.dart';
 import 'package:flutter_edit_story/API/saavan.dart' as savaanApi;
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
+import 'package:wheel_chooser/wheel_chooser.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 
 class VideoEditPage extends StatefulWidget {
   XFile file;
@@ -49,14 +52,20 @@ class _VideoEditPageState extends State<VideoEditPage> {
     super.initState();
 
     if (widget.video) {
-      _controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.file.path),
+      // _controller = VideoPlayerController.networkUrl(
+      //   Uri.parse(widget.file.path),
+      //   videoPlayerOptions: VideoPlayerOptions(
+      //     mixWithOthers: true,
+      //     allowBackgroundPlayback: true,
+      //   ),
+      // );
+      _controller = VideoPlayerController.asset(
+        widget.file.path,
         videoPlayerOptions: VideoPlayerOptions(
           mixWithOthers: true,
           allowBackgroundPlayback: true,
         ),
       );
-
       _initController = _controller.initialize().then((_) {
         Provider.of<VideoDurationModel>(
           context,
@@ -292,24 +301,31 @@ class _VideoEditPageState extends State<VideoEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       body: SafeArea(
         child: ClipRRect(
           borderRadius: BorderRadius.circular(25),
           child: Stack(
             children: [
-              (widget.video)
-                  ? FutureBuilder(
-                      future: _initController,
-                      builder: (context, snapshot) {
-                        return VideoPlayer(_controller);
-                      },
-                    )
-                  : Image.file(
-                      File(widget.file.path),
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                    ),
+              GestureDetector(
+                onTap: () {
+                  print('touched');
+                  context.pushTransparentRoute(const TextEditPage());
+                },
+                child: (widget.video)
+                    ? FutureBuilder(
+                        future: _initController,
+                        builder: (context, snapshot) {
+                          return VideoPlayer(_controller);
+                        },
+                      )
+                    : Image.file(
+                        File(widget.file.path),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                      ),
+              ),
               for (Map<String, dynamic> elem
                   in context.watch<ActiveWidget>().widgetlist)
                 WidgetItem(
@@ -556,3 +572,160 @@ class _VideoEditPageState extends State<VideoEditPage> {
 }
 //Use This To Merge Audio And Video
 // ffmpeg -i video.mp4 -i audio.wav -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 output.mp4
+
+class TextEditPage extends StatefulWidget {
+  const TextEditPage({super.key});
+
+  @override
+  State<TextEditPage> createState() => _TextEditPageState();
+}
+
+class _TextEditPageState extends State<TextEditPage> {
+  final TextEditingController _txtcontroller = TextEditingController();
+  Color selectedColor = Colors.white;
+  int index = 0;
+  FocusNode focusNode = FocusNode();
+  List<String> fonts = [
+    'Inter',
+    'AbrilFatface',
+    'BabasNeue',
+    'DancingScript',
+    'KolkerBrush',
+    'ProtestRevolution',
+    'ProtestStrike',
+    'RubikDoodleShadow',
+    'RubikGlitchPop',
+    'ZenTokyoZoo',
+  ];
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(() {
+      if (!focusNode.hasFocus) {
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _txtcontroller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(0, 0, 0, 0.5),
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        color: Colors.black12,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: IconButton.filled(
+                onPressed: _openColorPicker,
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.blue[300],
+                ),
+                icon: const Icon(Icons.colorize_sharp),
+              ),
+            ),
+            TextField(
+              focusNode: focusNode,
+              autofocus: true,
+              maxLines: null,
+              style: TextStyle(
+                fontSize: 30,
+                color: selectedColor,
+                fontFamily: fonts[index],
+                decoration: TextDecoration.none,
+                decorationColor: const Color.fromRGBO(0, 0, 0, 0),
+                // decorationStyle: TextDecorationStyle.wavy,
+              ),
+              textAlign: TextAlign.center,
+              controller: _txtcontroller,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color.fromRGBO(0, 0, 0, 0),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                    style: BorderStyle.none,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                    style: BorderStyle.none,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              ),
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.05,
+              child: WheelChooser.custom(
+                // magnification: 1.1,
+                startPosition: 0,
+                onValueChanged: (s) => setState(() => index = s),
+                horizontal: true,
+                perspective: 0.0001,
+                children: List.generate(
+                  fonts.length,
+                  (indx) => Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.width * 0.1,
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        decoration: BoxDecoration(
+                          color:
+                              (indx == index) ? Colors.white54 : Colors.black12,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                      ),
+                      Text(
+                        'Aa',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: (indx == index) ? Colors.black : Colors.white,
+                          fontFamily: fonts[indx],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openColorPicker() async {
+    bool pickedColor = await ColorPicker(
+      color: selectedColor,
+      onColorChanged: (Color newColor) {
+        setState(() {
+          selectedColor = newColor;
+        });
+      },
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      spacing: 10,
+      runSpacing: 10,
+      heading: const Text('Pick a color'),
+      subheading: const Text('Select a color for your widget'),
+      wheelDiameter: 200,
+      wheelWidth: 20,
+    ).showPickerDialog(context);
+  }
+}

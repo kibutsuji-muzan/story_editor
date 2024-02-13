@@ -52,7 +52,8 @@ dependencies:
   video_compress: ^3.1.2
   flutter_image_compress: ^2.1.0
   flutter_archive: ^6.0.0
-
+  wheel_chooser: ^1.1.2
+  flex_color_picker: ^3.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -93,24 +94,59 @@ flutter:
   fonts:
     - family: Inter
       fonts:
-        - asset: assets/Inter/Inter-Thin.ttf
+        - asset: assets/fonts/Inter/Inter-Thin.ttf
           weight: 100
-        - asset: assets/Inter/Inter-SemiBold.ttf
+        - asset: assets/fonts/Inter/Inter-SemiBold.ttf
           weight: 600
-        - asset: assets/Inter/Inter-Regular.ttf
+        - asset: assets/fonts/Inter/Inter-Regular.ttf
           weight: 400
-        - asset: assets/Inter/Inter-Medium.ttf
+        - asset: assets/fonts/Inter/Inter-Medium.ttf
           weight: 500
-        - asset: assets/Inter/Inter-Light.ttf
+        - asset: assets/fonts/Inter/Inter-Light.ttf
           weight: 300
-        - asset: assets/Inter/Inter-ExtraLight.ttf
+        - asset: assets/fonts/Inter/Inter-ExtraLight.ttf
           weight: 200
-        - asset: assets/Inter/Inter-ExtraBold.ttf
+        - asset: assets/fonts/Inter/Inter-ExtraBold.ttf
           weight: 800
-        - asset: assets/Inter/Inter-Bold.ttf
+        - asset: assets/fonts/Inter/Inter-Bold.ttf
           weight: 700
-        - asset: assets/Inter/Inter-Black.ttf
+        - asset: assets/fonts/Inter/Inter-Black.ttf
           weight: 900
 
+    - family: AbrilFatface
+      fonts:
+        - asset: assets/fonts/AbrilFatface/font.ttf
+
+    - family: BebasNeue
+      fonts:
+        - asset: assets/fonts/BebasNeue/font.ttf
+
+    - family: DancingScript
+      fonts:
+        - asset: assets/fonts/DancingScript/font.ttf
+
+    - family: KolkerBrush
+      fonts:
+        - asset: assets/fonts/KolkerBrush/font.ttf
+
+    - family: ProtestRevolution
+      fonts:
+        - asset: assets/fonts/ProtestRevolution/font.ttf
+
+    - family: ProtestStrike
+      fonts:
+        - asset: assets/fonts/ProtestStrike/font.ttf
+
+    - family: RubikDoodleShadow
+      fonts:
+        - asset: assets/fonts/RubikDoodleShadow/font.ttf
+
+    - family: RubikGlitchPop
+      fonts:
+        - asset: assets/fonts/RubikGlitchPop/font.ttf
+        
+    - family: ZenTokyoZoo
+      fonts:
+        - asset: assets/fonts/ZenTokyoZoo/font.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

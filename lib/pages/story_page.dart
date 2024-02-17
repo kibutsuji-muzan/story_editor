@@ -49,7 +49,11 @@ class _StoryPageState extends State<StoryPage> {
           print('data:$_data');
 
         case '.mp4':
-          _controller = VideoPlayerController.file(File(a.path));
+          _controller = VideoPlayerController.file(File(a.path),
+              videoPlayerOptions: VideoPlayerOptions(
+                allowBackgroundPlayback: true,
+                mixWithOthers: true,
+              ));
           _initController = _controller.initialize().then((value) => true);
           _controller.setLooping(true);
           _controller.play();
@@ -66,17 +70,17 @@ class _StoryPageState extends State<StoryPage> {
   }
 
   void callback() async {
-    if (image.isEmpty) {
+    if (await _initController) {
+      print('mute');
       _controller.setVolume(0);
+      _controller.play();
     }
   }
 
   @override
   void dispose() {
     super.dispose();
-    if (image.isEmpty) {
-      _controller.dispose();
-    }
+    _initController.then((value) => _controller.dispose());
   }
 
   @override
@@ -225,8 +229,9 @@ class __widgetState extends State<_widget> {
         end: Duration(milliseconds: widget.data['trim']['end']),
       );
       _controller.setLoopMode(LoopMode.one);
-      _controller.play();
       widget.func();
+      _controller.play();
+
       return WidgetMusic(
         title: widget.data['title'],
         thumbnail: widget.data['thumbnail'],

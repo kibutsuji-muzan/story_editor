@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:flutter_edit_story/components/MusicModal.dart';
 import 'package:flutter_edit_story/components/ProductModal.dart';
+import 'package:flutter_edit_story/main.dart';
 import 'package:flutter_edit_story/pages/home_page.dart';
 import 'package:flutter_edit_story/var.dart';
 import 'package:flutter_edit_story/widgets/MusicWidget.dart';
@@ -52,20 +53,20 @@ class _VideoEditPageState extends State<VideoEditPage> {
     super.initState();
 
     if (widget.video) {
-      // _controller = VideoPlayerController.networkUrl(
-      //   Uri.parse(widget.file.path),
-      //   videoPlayerOptions: VideoPlayerOptions(
-      //     mixWithOthers: true,
-      //     allowBackgroundPlayback: true,
-      //   ),
-      // );
-      _controller = VideoPlayerController.asset(
-        widget.file.path,
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.file.path),
         videoPlayerOptions: VideoPlayerOptions(
           mixWithOthers: true,
           allowBackgroundPlayback: true,
         ),
       );
+      // _controller = VideoPlayerController.asset(
+      //   widget.file.path,
+      //   videoPlayerOptions: VideoPlayerOptions(
+      //     mixWithOthers: true,
+      //     allowBackgroundPlayback: true,
+      //   ),
+      // );
       _initController = _controller.initialize().then((_) {
         Provider.of<VideoDurationModel>(
           context,
@@ -182,7 +183,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
         zipFile: zipFile,
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
     return zipFile;
   }
@@ -228,20 +229,26 @@ class _VideoEditPageState extends State<VideoEditPage> {
         await Directory('${tempDir.path}/story').create(recursive: true);
     String video = await saveVideo(workplace);
     String json = await saveJson(workplace.path);
-    var file = await _createZip(
+    File file = await _createZip(
       video,
       json,
       workplace,
     );
+    while (!await file.exists()) {
+      await Future.delayed(const Duration(seconds: 3));
+    }
     await sendFile(file: file).then((value) {
-      Provider.of<SelectedProduct>(context, listen: false).setProductId(0);
-      Provider.of<ActiveWidget>(context, listen: false).removeAll();
+      if (value == 200) {
+        Provider.of<SelectedProduct>(context, listen: false).setProductId(0);
+        Provider.of<ActiveWidget>(context, listen: false).removeAll();
+        workplace.delete(recursive: true);
+      }
     });
   }
 
   Future<int> sendFile({required File file}) async {
     int pid = Provider.of<SelectedProduct>(context, listen: false).productId;
-    print(file.path);
+    debugPrint(file.path);
     var request = http.MultipartRequest(
       'POST',
       Uri.https(domain, '/api/story_upload'),
@@ -252,6 +259,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
       },
     );
     if (pid != 0) request.fields['product_id'];
+
     request.files.add(
       http.MultipartFile.fromBytes(
         'story',
@@ -261,29 +269,30 @@ class _VideoEditPageState extends State<VideoEditPage> {
     );
     var res = await request.send();
     var resp = await http.Response.fromStream(res);
-    print(resp.body);
+    debugPrint(resp.body);
     return res.statusCode;
   }
 
-  Widget widgetchooser(
-    Key widget,
-    String link,
-    Key key,
-    String title,
-    String thumbnail,
-    String subtitle,
-  ) {
-    switch (widget) {
+  Widget widgetchooser({required Map<String, dynamic> data}) {
+    debugPrint(data.toString());
+    switch (data['widget']) {
       case const Key('gif'):
-        return Image.network(key: key, link);
+        return Image.network(data['link'], key: data['key']);
       case const Key('sticker'):
-        return Image.network(key: key, link);
+        return Image.network(data['link'], key: data['key']);
       case const Key('music'):
         return MusicWidget(
-          url: link,
-          title: title,
-          thumbnail: thumbnail,
-          subtitle: subtitle,
+          url: data['link'],
+          title: data['title'],
+          thumbnail: data['thumbnail'],
+          subtitle: data['subtitle'],
+        );
+      case const Key('text'):
+        return textWidget(
+          key: data['key'],
+          data: data['data'],
+          color: data['color'],
+          font: data['font'],
         );
       default:
         return const Text('data');
@@ -310,8 +319,8 @@ class _VideoEditPageState extends State<VideoEditPage> {
             children: [
               GestureDetector(
                 onTap: () {
-                  print('touched');
-                  context.pushTransparentRoute(const TextEditPage());
+                  context.pushTransparentRoute(
+                      TextEditPage(data: null, notifyParent: refresh));
                 },
                 child: (widget.video)
                     ? FutureBuilder(
@@ -376,14 +385,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
                       });
                     }
                   },
-                  widget: widgetchooser(
-                    elem['widget'],
-                    elem['link'],
-                    elem['key'],
-                    elem['title'] ?? '',
-                    elem['thumbnail'] ?? '',
-                    elem['subtitle'] ?? '',
-                  ),
+                  widget: widgetchooser(data: elem),
                 ),
               (_deleteButton)
                   ? Align(
@@ -574,7 +576,17 @@ class _VideoEditPageState extends State<VideoEditPage> {
 // ffmpeg -i video.mp4 -i audio.wav -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 output.mp4
 
 class TextEditPage extends StatefulWidget {
-  const TextEditPage({super.key});
+  Function notifyParent;
+  String? data;
+  String? color;
+  String? font;
+  TextEditPage({
+    super.key,
+    this.data,
+    this.color,
+    this.font,
+    required this.notifyParent,
+  });
 
   @override
   State<TextEditPage> createState() => _TextEditPageState();
@@ -582,8 +594,9 @@ class TextEditPage extends StatefulWidget {
 
 class _TextEditPageState extends State<TextEditPage> {
   final TextEditingController _txtcontroller = TextEditingController();
-  Color selectedColor = Colors.white;
-  int index = 0;
+  int findex = 0;
+  int cindex = 0;
+
   FocusNode focusNode = FocusNode();
   List<String> fonts = [
     'Inter',
@@ -597,9 +610,35 @@ class _TextEditPageState extends State<TextEditPage> {
     'RubikGlitchPop',
     'ZenTokyoZoo',
   ];
+  List<String> colors = [
+    '#ffffff',
+    '#000000',
+    '#845EC2',
+    '#D65DB1',
+    '#FF6F91',
+    '#FF9671',
+    '#FFC75F',
+    '#2C73D2',
+    '#FBEAFF',
+    '#B0A8B9',
+    '#4FFBDF',
+  ];
   @override
   void initState() {
     super.initState();
+    debugPrint(widget.color);
+    debugPrint(widget.font);
+    if (widget.color != null) {
+      setState(() {
+        cindex = colors.indexOf(widget.color ?? '#000000');
+      });
+    }
+    if (widget.font != null) {
+      setState(() {
+        findex = fonts.indexOf(widget.font ?? 'Inter');
+      });
+    }
+    _txtcontroller.text = widget.data ?? '';
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
         Navigator.of(context).pop();
@@ -624,14 +663,41 @@ class _TextEditPageState extends State<TextEditPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: IconButton.filled(
-                onPressed: _openColorPicker,
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.blue[300],
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.05,
+              child: WheelChooser.custom(
+                // magnification: 1.1,
+                startPosition: 0,
+                onValueChanged: (s) => setState(() => cindex = s),
+                horizontal: true,
+                perspective: 0.00000001,
+                children: List.generate(
+                  colors.length,
+                  (indx) => Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        height: MediaQuery.of(context).size.width * 0.07,
+                        width: MediaQuery.of(context).size.width * 0.07,
+                        decoration: BoxDecoration(
+                          color: (indx == cindex)
+                              ? Colors.white54
+                              : Colors.black12,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                      ),
+                      Container(
+                        height: MediaQuery.of(context).size.width * 0.06,
+                        width: MediaQuery.of(context).size.width * 0.06,
+                        decoration: BoxDecoration(
+                          color: colors[indx].hextocolor,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-                icon: const Icon(Icons.colorize_sharp),
               ),
             ),
             TextField(
@@ -640,12 +706,31 @@ class _TextEditPageState extends State<TextEditPage> {
               maxLines: null,
               style: TextStyle(
                 fontSize: 30,
-                color: selectedColor,
-                fontFamily: fonts[index],
+                color: colors[cindex].hextocolor,
+                fontFamily: fonts[findex],
                 decoration: TextDecoration.none,
                 decorationColor: const Color.fromRGBO(0, 0, 0, 0),
                 // decorationStyle: TextDecorationStyle.wavy,
               ),
+              keyboardType: TextInputType.text,
+              onSubmitted: (value) {
+                if (widget.key == null) {
+                  Provider.of<ActiveWidget>(context, listen: false).addWidget({
+                    'widget': const Key('text'),
+                    'key': UniqueKey(),
+                    'font': fonts[findex],
+                    'color': colors[cindex],
+                    'data': _txtcontroller.text,
+                  });
+                } else {
+                  Provider.of<ActiveWidget>(context, listen: false)
+                      .update(key: widget.key ?? const Key(''), data: {
+                    'font': fonts[findex],
+                    'color': colors[cindex],
+                    'data': _txtcontroller.text,
+                  });
+                }
+              },
               textAlign: TextAlign.center,
               controller: _txtcontroller,
               decoration: InputDecoration(
@@ -673,7 +758,7 @@ class _TextEditPageState extends State<TextEditPage> {
               child: WheelChooser.custom(
                 // magnification: 1.1,
                 startPosition: 0,
-                onValueChanged: (s) => setState(() => index = s),
+                onValueChanged: (s) => setState(() => findex = s),
                 horizontal: true,
                 perspective: 0.0001,
                 children: List.generate(
@@ -685,8 +770,9 @@ class _TextEditPageState extends State<TextEditPage> {
                         height: MediaQuery.of(context).size.width * 0.1,
                         width: MediaQuery.of(context).size.width * 0.1,
                         decoration: BoxDecoration(
-                          color:
-                              (indx == index) ? Colors.white54 : Colors.black12,
+                          color: (indx == findex)
+                              ? Colors.white54
+                              : Colors.black12,
                           borderRadius: BorderRadius.circular(100),
                         ),
                       ),
@@ -694,7 +780,7 @@ class _TextEditPageState extends State<TextEditPage> {
                         'Aa',
                         style: TextStyle(
                           fontSize: 20,
-                          color: (indx == index) ? Colors.black : Colors.white,
+                          color: (indx == findex) ? Colors.black : Colors.white,
                           fontFamily: fonts[indx],
                         ),
                       ),
@@ -708,24 +794,39 @@ class _TextEditPageState extends State<TextEditPage> {
       ),
     );
   }
+}
 
-  Future<void> _openColorPicker() async {
-    bool pickedColor = await ColorPicker(
-      color: selectedColor,
-      onColorChanged: (Color newColor) {
-        setState(() {
-          selectedColor = newColor;
-        });
-      },
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      spacing: 10,
-      runSpacing: 10,
-      heading: const Text('Pick a color'),
-      subheading: const Text('Select a color for your widget'),
-      wheelDiameter: 200,
-      wheelWidth: 20,
-    ).showPickerDialog(context);
+class textWidget extends StatelessWidget {
+  String data;
+  String font;
+  String color;
+  textWidget({
+    super.key,
+    required this.data,
+    required this.color,
+    required this.font,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.pushTransparentRoute(
+        TextEditPage(
+          key: key,
+          data: data,
+          color: color,
+          font: font,
+          notifyParent: () {},
+        ),
+      ),
+      child: Text(
+        data,
+        style: TextStyle(
+          fontFamily: font,
+          fontSize: 50,
+          color: color.hextocolor,
+        ),
+      ),
+    );
   }
 }

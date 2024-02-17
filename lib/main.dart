@@ -35,12 +35,22 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Inter',
       ),
       // home: const HomePage(),
-      // home: const HomePage(),
-      home: VideoEditPage(
-        file: XFile('assets/video.mp4'),
-        video: true,
-      ),
+      home: const HomePage(),
+      // home: VideoEditPage(
+      //   file: XFile('assets/video.mp4'),
+      //   video: true,
+      // ),
     );
+  }
+}
+
+extension HexToColor on String {
+  Color get hextocolor {
+    final hexString = this;
+    final buffer = StringBuffer();
+    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    buffer.write(hexString.replaceFirst('#', ''));
+    return Color(int.parse(buffer.toString(), radix: 16));
   }
 }
 // [1.4246864920636282, -1.0686063327775563, 0.0, 0.0, 1.0686063327775563, 1.4246864920636282, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -363.5059088816478, 295.83831994799834, 0.0, 1.0]

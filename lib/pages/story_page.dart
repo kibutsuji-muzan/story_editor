@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_edit_story/main.dart';
 import 'package:flutter_edit_story/pages/test_copy.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 import 'package:just_audio/just_audio.dart';
@@ -27,7 +28,7 @@ class StoryPage extends StatefulWidget {
 class _StoryPageState extends State<StoryPage> {
   late VideoPlayerController _controller;
   late Future<bool> _initController;
-  late List _data;
+  late List<Map<String, dynamic>> _data = [];
   late String image;
 
   @override
@@ -42,16 +43,16 @@ class _StoryPageState extends State<StoryPage> {
     for (var a in dir.listSync(followLinks: false)) {
       switch (p.extension(a.path)) {
         case '.json':
-          _data = jsonDecode(await File(a.path).readAsString())['widgets'];
-          setState(() {});
-          break;
+          jsonDecode(await File(a.path).readAsString())['widgets']
+              .forEach((elem) => setState(() => _data.add(elem)));
+
+          print('data:$_data');
 
         case '.mp4':
           _controller = VideoPlayerController.file(File(a.path));
           _initController = _controller.initialize().then((value) => true);
           _controller.setLooping(true);
-          _controller.setVolume(0);
-          // setState(() {});
+          _controller.play();
           video = true;
           break;
         case '.jpg':
@@ -59,11 +60,15 @@ class _StoryPageState extends State<StoryPage> {
             image = a.path;
           });
           _initController = Future(() => false);
-          print(image);
           break;
       }
     }
-    print(_data);
+  }
+
+  void callback() async {
+    if (image.isEmpty) {
+      _controller.setVolume(0);
+    }
   }
 
   @override
@@ -74,10 +79,6 @@ class _StoryPageState extends State<StoryPage> {
     }
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Container();
-  // }
   @override
   Widget build(BuildContext context) {
     return DismissiblePage(
@@ -93,7 +94,6 @@ class _StoryPageState extends State<StoryPage> {
               future: _initController,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  print(snapshot);
                   return const CircularProgressIndicator();
                 }
                 return Stack(
@@ -134,7 +134,7 @@ class _StoryPageState extends State<StoryPage> {
                             ),
                           )
                         : Container(),
-                    for (var wdgt in _data) _widget(data: wdgt),
+                    for (var wdgt in _data) _widget(data: wdgt, func: callback),
                     // Align(
                     //   alignment: Alignment.topCenter,
                     //   child: VideoProgressIndicator(
@@ -147,15 +147,17 @@ class _StoryPageState extends State<StoryPage> {
                     //     padding: const EdgeInsets.all(0),
                     //   ),
                     // ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Image.asset(
-                        'assets/swip.gif',
-                        width: 100,
-                        height: 100,
-                        color: Colors.white,
-                      ),
-                    )
+                    (widget.productId != null)
+                        ? Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Image.asset(
+                              'assets/swip.gif',
+                              width: 100,
+                              height: 100,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const SizedBox()
                   ],
                 );
               },
@@ -187,9 +189,11 @@ Route _createRoute(int pid) {
 
 class _widget extends StatefulWidget {
   Map<String, dynamic> data;
+  Function func;
   _widget({
     super.key,
     required this.data,
+    required this.func,
   });
 
   @override
@@ -204,23 +208,41 @@ class __widgetState extends State<_widget> {
   void initState() {
     super.initState();
     _widget = choose();
+    choose().then((value) => print(value));
   }
 
   Future<Widget> choose() async {
-    switch (widget.data['widget']) {
-      case const Key('polls'):
-        return const PollsWidget();
-
-      case const Key('music'):
-        await _controller.setUrl(widget.data['link']);
-        _controller.play();
-        return WidgetMusic(
-          title: widget.data['title'],
-          thumbnail: widget.data['thumbnail'],
-          subtitle: widget.data['subtitle'],
-        );
-      default:
-        return const Text('data');
+    if (widget.data['widget'].toString().contains('polls')) {
+      return const PollsWidget();
+    } else if (widget.data['widget'].toString().contains('gif')) {
+      return Image.network(widget.data['link']);
+    } else if (widget.data['widget'].toString().contains('sticker')) {
+      return Image.network(widget.data['link']);
+    } else if (widget.data['widget'].toString().contains('music')) {
+      await _controller.setUrl(widget.data['link']);
+      _controller.setClip(
+        start: Duration(milliseconds: widget.data['trim']['start']),
+        end: Duration(milliseconds: widget.data['trim']['end']),
+      );
+      _controller.setLoopMode(LoopMode.one);
+      _controller.play();
+      widget.func();
+      return WidgetMusic(
+        title: widget.data['title'],
+        thumbnail: widget.data['thumbnail'],
+        subtitle: widget.data['subtitle'],
+      );
+    } else if (widget.data['widget'].toString().contains('text')) {
+      return Text(
+        widget.data['data'],
+        style: TextStyle(
+          fontFamily: widget.data['font'],
+          fontSize: 50,
+          color: widget.data['color'].toString().hextocolor,
+        ),
+      );
+    } else {
+      return const Text('data');
     }
   }
 
@@ -233,9 +255,10 @@ class __widgetState extends State<_widget> {
   @override
   Widget build(BuildContext context) {
     return Transform(
-      transform: Matrix4.fromList(widget.data['position']).isZero()
-          ? Matrix4.identity()
-          : Matrix4.fromList(widget.data['position']),
+      transform:
+          Matrix4.fromList(widget.data['position'].cast<double>()).isZero()
+              ? Matrix4.identity()
+              : Matrix4.fromList(widget.data['position'].cast<double>()),
       child: Container(
         padding: const EdgeInsets.all(32),
         alignment: const Alignment(0, -0.5),

@@ -3,7 +3,7 @@ import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 
-const String domain = '4dc4-103-211-19-214.ngrok-free.app';
+const String domain = '10cc-103-211-19-214.ngrok-free.app';
 const String token = '1|QxCMprDaMvMRGkNLpYb5rh6sPOF5aRoV9WN1Q4s21c074e06';
 
 enum grp { Yes, No }
@@ -149,6 +149,17 @@ class ActiveWidget extends ChangeNotifier {
     List<num> mat = List<num>.filled(16, 0, growable: false);
     matrix.copyIntoArray(mat);
     _widgets.where((element) => element['key'] == key).first['position'] = mat;
+    notifyListeners();
+  }
+
+  void update({required Key key, required Map<String, dynamic> data}) {
+    print(key);
+    var widget = _widgets.where((element) => element['key'] == key).first;
+    data.forEach((key, value) {
+      if (widget.containsKey(key)) {
+        widget.update(key, (v) => value);
+      }
+    });
     notifyListeners();
   }
 }

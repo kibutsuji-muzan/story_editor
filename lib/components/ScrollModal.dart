@@ -216,7 +216,8 @@ class _GifTabBarState extends State<GifTabBar> {
                         child: FittedBox(
                           fit: BoxFit.contain,
                           child: Image.network(
-                              'https://i.giphy.com/${searched.isEmpty ? snapshot.data![index] : searched[index]}.webp'),
+                            'https://i.giphy.com/${searched.isEmpty ? snapshot.data![index] : searched[index]}.webp',
+                          ),
                         ),
                       ),
                     ),

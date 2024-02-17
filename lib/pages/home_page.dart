@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_archive/flutter_archive.dart';
@@ -87,7 +86,7 @@ class _HomePageState extends State<HomePage> {
         zipFile.delete();
       });
     } catch (e) {
-      print(e);
+      debugPrint('$e');
     }
     return destinationDir.path;
   }
@@ -100,7 +99,7 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Story Page'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(22.0),
+        padding: const EdgeInsets.only(left: 22.0, top: 22),
         child: SafeArea(
           child: Stack(
             children: [
@@ -108,7 +107,12 @@ class _HomePageState extends State<HomePage> {
                 future: fetchData(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text('No Story Posted Yet'),
+                    );
                   }
                   return ListView.builder(
                     scrollDirection: Axis.vertical,

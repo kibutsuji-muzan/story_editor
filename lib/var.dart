@@ -3,8 +3,9 @@ import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 
-const String domain = '10cc-103-211-19-214.ngrok-free.app';
-const String token = '1|QxCMprDaMvMRGkNLpYb5rh6sPOF5aRoV9WN1Q4s21c074e06';
+const String domain = '41bf-103-211-53-1.ngrok-free.app';
+
+const String token = '1|rgAruaLeQLqTJvEzvoQm4vmNobCjjYujjnLX1osv11f2824a';
 
 enum grp { Yes, No }
 
@@ -31,6 +32,25 @@ List allWidgetsList = [
     width: 100,
   ),
 ];
+
+class storyWidget {
+  int? productId;
+  int id;
+  int views;
+  String username;
+  String directory;
+  storyWidget({
+    required this.directory,
+    required this.id,
+    required this.views,
+    required this.username,
+    required this.productId,
+  });
+
+  void updateView(int views) {
+    this.views = views;
+  }
+}
 
 class Song {
   final String link;

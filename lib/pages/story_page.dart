@@ -5,20 +5,24 @@ import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/main.dart';
 import 'package:flutter_edit_story/pages/test_copy.dart';
+import 'package:flutter_edit_story/var.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path/path.dart' as p;
+import 'package:http/http.dart' as http;
 
 class StoryPage extends StatefulWidget {
   String userName;
   int? productId;
   String dir;
+  int id;
   StoryPage({
     super.key,
     required this.userName,
     required this.productId,
     required this.dir,
+    required this.id,
   });
 
   @override
@@ -33,6 +37,17 @@ class _StoryPageState extends State<StoryPage> {
 
   @override
   void initState() {
+    var res = http.post(
+      Uri.https(
+        domain,
+        'api/update_view',
+      ),
+      body: {'id': widget.id.toString()},
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    ).then((value) => print(value.body));
+    ;
     init();
     super.initState();
   }

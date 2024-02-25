@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_archive/flutter_archive.dart';
@@ -18,14 +19,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> storyDir = [];
+  List<storyWidget> result = [];
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<List<Map<String, dynamic>>> fetchData() async {
+  Future<List<storyWidget>> fetchData() async {
     var _res = await http.get(
       Uri.https(domain, '/api/story_get'),
       headers: {
@@ -33,21 +34,40 @@ class _HomePageState extends State<HomePage> {
       },
     );
     var res = jsonDecode(_res.body);
-    List<Map<String, dynamic>> result = [];
     int i = 0;
     for (Map<String, dynamic> r in res) {
-      await downloadZip(r['file']
-              .replaceAll('http', 'https')
-              .replaceAll('localhost', domain))
-          .then((value) {
-        result.add({
-          'productId': res[i]['product_id'],
-          'username': res[i]['user_id'],
-          'directory':
-              '${value.dir.path}/${value.file.path.split('/').last.split('.').first}',
-        });
-        i++;
-      });
+      var value = await downloadZip(r['file']
+          .replaceAll('http', 'https')
+          .replaceAll('localhost', domain));
+      if (result.isNotEmpty) {
+        for (storyWidget r in result) {
+          if (r.id == res[i]['id']) {
+          } else {
+            result.add(
+              storyWidget(
+                id: res[i]['id'],
+                productId: res[i]['product_id'],
+                views: res[i]['views'],
+                username: res[i]['user_id'],
+                directory:
+                    '${value.dir.path}/${value.file.path.split('/').last.split('.').first}',
+              ),
+            );
+          }
+        }
+      } else {
+        result.add(
+          storyWidget(
+            id: res[i]['id'],
+            productId: res[i]['product_id'],
+            views: res[i]['views'],
+            username: res[i]['user_id'],
+            directory:
+                '${value.dir.path}/${value.file.path.split('/').last.split('.').first}',
+          ),
+        );
+      }
+      i++;
     }
     return result;
   }
@@ -65,9 +85,9 @@ class _HomePageState extends State<HomePage> {
       ..listen(
         (event) => downloadData.addAll(event),
         onDone: () async {
-          await file
-              .writeAsBytes(downloadData)
-              .then((value) => _extractZip(value, dir.path));
+          await file.writeAsBytes(downloadData).then(
+                (value) => _extractZip(value, dir.path),
+              );
         },
       );
     return (file: file, dir: dir);
@@ -91,6 +111,22 @@ class _HomePageState extends State<HomePage> {
     return destinationDir.path;
   }
 
+  Future<int> getViews() async {
+    var res = await http.post(
+      Uri.https(domain, 'api/get_views'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    int i = 0;
+    for (var r in jsonDecode(res.body)) {
+      result[i].updateView(r['views']);
+      i++;
+    }
+    setState(() {});
+    return jsonDecode(res.body);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,19 +145,25 @@ class _HomePageState extends State<HomePage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (snapshot.data!.isEmpty) {
+                  if (!snapshot.hasData) {
+                    print(result);
                     return const Center(
                       child: Text('No Story Posted Yet'),
                     );
                   }
-                  return ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    itemCount: snapshot.data!.length,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => StoryWidget(
-                      productId: snapshot.data?[index]['productId'],
-                      userName: snapshot.data?[index]['username'],
-                      dir: snapshot.data?[index]['directory'],
+                  return RefreshIndicator(
+                    onRefresh: getViews,
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: result.length,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemBuilder: (context, index) => StoryWidget(
+                        id: result[index].id,
+                        productId: result[index].productId,
+                        views: result[index].views,
+                        userName: result[index].username,
+                        dir: result[index].directory,
+                      ),
                     ),
                   );
                 },
@@ -153,12 +195,16 @@ class _HomePageState extends State<HomePage> {
 class StoryWidget extends StatefulWidget {
   String userName;
   int? productId;
+  int id;
+  int views;
   String dir;
   StoryWidget({
     super.key,
     required this.productId,
     required this.userName,
     required this.dir,
+    required this.id,
+    required this.views,
   });
 
   @override
@@ -192,6 +238,7 @@ class _StoryWidgetState extends State<StoryWidget>
             builder: (context) => StoryPage(
               userName: widget.userName,
               productId: widget.productId,
+              id: widget.id,
               dir: widget.dir,
             ),
           ),
@@ -224,6 +271,16 @@ class _StoryWidgetState extends State<StoryWidget>
               padding: const EdgeInsets.all(8.0),
               child: Text(widget.userName),
             ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                  child: Text('Views: ${widget.views}'),
+                ),
+              ),
+            )
           ],
         ),
       ),

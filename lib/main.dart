@@ -11,6 +11,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PlayingSong()),
+        ChangeNotifierProvider(create: (_) => StoryList()),
         ChangeNotifierProvider(create: (_) => VideoDurationModel()),
         ChangeNotifierProvider(create: (_) => TrimmedAudio()),
         ChangeNotifierProvider(create: (_) => SelectedProduct()),

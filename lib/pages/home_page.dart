@@ -10,6 +10,7 @@ import 'package:flutter_edit_story/var.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,57 +20,37 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<storyWidget> result = [];
-
   @override
   void initState() {
+    getViews();
     super.initState();
   }
 
-  Future<List<storyWidget>> fetchData() async {
+  Future<int> fetchData() async {
     var _res = await http.get(
       Uri.https(domain, '/api/story_get'),
       headers: {
         'Authorization': 'Bearer $token',
       },
     );
-    var res = jsonDecode(_res.body);
-    int i = 0;
+    List res = jsonDecode(_res.body);
+    Provider.of<StoryList>(context, listen: false).clearList();
     for (Map<String, dynamic> r in res) {
-      var value = await downloadZip(r['file']
-          .replaceAll('http', 'https')
-          .replaceAll('localhost', domain));
-      if (result.isNotEmpty) {
-        for (storyWidget r in result) {
-          if (r.id == res[i]['id']) {
-          } else {
-            result.add(
-              storyWidget(
-                id: res[i]['id'],
-                productId: res[i]['product_id'],
-                views: res[i]['views'],
-                username: res[i]['user_id'],
-                directory:
-                    '${value.dir.path}/${value.file.path.split('/').last.split('.').first}',
-              ),
-            );
-          }
-        }
-      } else {
-        result.add(
-          storyWidget(
-            id: res[i]['id'],
-            productId: res[i]['product_id'],
-            views: res[i]['views'],
-            username: res[i]['user_id'],
-            directory:
-                '${value.dir.path}/${value.file.path.split('/').last.split('.').first}',
-          ),
-        );
-      }
-      i++;
+      var value = await downloadZip(
+        r['file'].replaceAll('http', 'https').replaceAll('localhost', domain),
+      );
+      Provider.of<StoryList>(context, listen: false).addStory(
+        storyWidget(
+          id: r['id'],
+          productId: r['product_id'],
+          views: r['views'],
+          username: r['user_id'],
+          directory:
+              '${value.dir.path}/${value.file.path.split('/').last.split('.').first}',
+        ),
+      );
     }
-    return result;
+    return 0;
   }
 
   Future<({File file, Directory dir})> downloadZip(String url) async {
@@ -118,12 +99,12 @@ class _HomePageState extends State<HomePage> {
         'Authorization': 'Bearer $token',
       },
     );
-    int i = 0;
     for (var r in jsonDecode(res.body)) {
-      result[i].updateView(r['views']);
-      i++;
+      Provider.of<StoryList>(context, listen: false).updateStoryView(
+        id: r['id'],
+        view: r['views'],
+      );
     }
-    setState(() {});
     return jsonDecode(res.body);
   }
 
@@ -145,8 +126,8 @@ class _HomePageState extends State<HomePage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (!snapshot.hasData) {
-                    print(result);
+                  if (snapshot.data != 0) {
+                    print(snapshot.data);
                     return const Center(
                       child: Text('No Story Posted Yet'),
                     );
@@ -155,14 +136,24 @@ class _HomePageState extends State<HomePage> {
                     onRefresh: getViews,
                     child: ListView.builder(
                       scrollDirection: Axis.vertical,
-                      itemCount: result.length,
+                      itemCount: context.watch<StoryList>().storylist.length,
                       physics: const AlwaysScrollableScrollPhysics(),
                       itemBuilder: (context, index) => StoryWidget(
-                        id: result[index].id,
-                        productId: result[index].productId,
-                        views: result[index].views,
-                        userName: result[index].username,
-                        dir: result[index].directory,
+                        id: context.watch<StoryList>().storylist[index].id,
+                        productId: context
+                            .watch<StoryList>()
+                            .storylist[index]
+                            .productId,
+                        views:
+                            context.watch<StoryList>().storylist[index].views,
+                        userName: context
+                            .watch<StoryList>()
+                            .storylist[index]
+                            .username,
+                        dir: context
+                            .watch<StoryList>()
+                            .storylist[index]
+                            .directory,
                       ),
                     ),
                   );

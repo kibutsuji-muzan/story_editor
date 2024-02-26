@@ -3,7 +3,7 @@ import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 
-const String domain = '41bf-103-211-53-1.ngrok-free.app';
+const String domain = '2056-103-211-53-1.ngrok-free.app';
 
 const String token = '1|rgAruaLeQLqTJvEzvoQm4vmNobCjjYujjnLX1osv11f2824a';
 
@@ -32,6 +32,28 @@ List allWidgetsList = [
     width: 100,
   ),
 ];
+
+class StoryList extends ChangeNotifier {
+  // ignore: prefer_final_fields
+  List<storyWidget> _stories = [];
+
+  List<storyWidget> get storylist => _stories;
+
+  void addStory(storyWidget story) {
+    _stories.add(story);
+    notifyListeners();
+  }
+
+  void updateStoryView({required int id, required int view}) {
+    _stories.where((element) => element.id == id).first.views = view;
+    notifyListeners();
+  }
+
+  void clearList() {
+    _stories.clear();
+    notifyListeners();
+  }
+}
 
 class storyWidget {
   int? productId;

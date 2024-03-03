@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/pages/home_page.dart';
+import 'package:flutter_edit_story/pages/test_copy.dart';
+import 'package:flutter_edit_story/widgets/TimerWidget.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_edit_story/var.dart';
 
@@ -15,7 +17,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => VideoDurationModel()),
         ChangeNotifierProvider(create: (_) => TrimmedAudio()),
         ChangeNotifierProvider(create: (_) => SelectedProduct()),
-        ChangeNotifierProvider(create: (_) => ActiveWidget())
+        ChangeNotifierProvider(create: (_) => ActiveWidget()),
+        ChangeNotifierProvider(create: (_) => DurationTimer())
       ],
       child: const MyApp(),
     ),
@@ -36,11 +39,11 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Inter',
       ),
       // home: const HomePage(),
-      home: const HomePage(),
-      // home: VideoEditPage(
-      //   file: XFile('assets/video.mp4'),
-      //   video: true,
-      // ),
+      // home: TimerWidget(),
+      home: VideoEditPage(
+        file: XFile('assets/video.mp4'),
+        video: true,
+      ),
     );
   }
 }

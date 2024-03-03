@@ -1,13 +1,23 @@
+import 'package:easy_audio_trimmer/easy_audio_trimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 
-const String domain = '2056-103-211-53-1.ngrok-free.app';
+const String domain = 'ccab-103-211-53-86.ngrok-free.app';
 
 const String token = '1|rgAruaLeQLqTJvEzvoQm4vmNobCjjYujjnLX1osv11f2824a';
 
 enum grp { Yes, No }
+
+Duration parseDuration({required String duration}) {
+  List<String> ele = duration.split(':');
+  return Duration(
+    hours: int.parse(ele[0]),
+    minutes: int.parse(ele[1]),
+    seconds: double.parse(ele[2]).toInt(),
+  );
+}
 
 chooseWidget(Widget item) {
   switch (item) {
@@ -163,6 +173,19 @@ class TrimmedAudio extends ChangeNotifier {
     _start = start;
     _end = end;
     notifyListeners(); // Notify listeners of the change
+  }
+}
+
+class DurationTimer extends ChangeNotifier {
+  Duration _timer = Duration();
+
+  String get timer => _timer.toString();
+
+  void setTimer(String dur) {
+    String _t =
+        parseDuration(duration: dur).format(DurationStyle.FORMAT_HH_MM_SS);
+    _timer = parseDuration(duration: _t);
+    notifyListeners();
   }
 }
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_edit_story/var.dart';
+import 'package:flutter_edit_story/widgets/TimerWidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -120,7 +121,7 @@ class _ScrollModalState extends State<ScrollModal>
                       GifTabBar(controller: scrollController, query: gif),
                       StickerTabBar(
                           controller: scrollController, query: sticker),
-                      GifTabBar(controller: scrollController, query: gif2),
+                      WidgetTabBar(controller: scrollController),
                     ],
                   ),
                 ),
@@ -350,6 +351,77 @@ class _StickerTabBarState extends State<StickerTabBar> {
                 child: const CircularProgressIndicator(),
               ),
             ),
+    );
+  }
+}
+
+class WidgetTabBar extends StatefulWidget {
+  ScrollController controller;
+  WidgetTabBar({super.key, required this.controller});
+
+  @override
+  State<WidgetTabBar> createState() => _WidgetTabBarState();
+}
+
+class _WidgetTabBarState extends State<WidgetTabBar> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisSpacing: 1,
+      mainAxisSpacing: 2,
+      crossAxisCount: 2,
+      children: <Widget>[
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.3,
+          child: FittedBox(
+            fit: BoxFit.fitWidth,
+            child: _Timer(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _Timer() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pop();
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+          isScrollControlled: true,
+          builder: (context) => const TimerModal(),
+        );
+      },
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              offset: Offset(0, 2),
+              blurRadius: 2,
+            )
+          ],
+          borderRadius: BorderRadius.all(
+            Radius.circular(4),
+          ),
+        ),
+        child: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Timer \nWidget',
+            style: TextStyle(
+              fontSize: 12,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

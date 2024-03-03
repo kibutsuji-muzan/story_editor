@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,6 +12,7 @@ import 'package:flutter_edit_story/main.dart';
 import 'package:flutter_edit_story/pages/home_page.dart';
 import 'package:flutter_edit_story/var.dart';
 import 'package:flutter_edit_story/widgets/MusicWidget.dart';
+import 'package:flutter_edit_story/widgets/TimerWidget.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -293,6 +295,11 @@ class _VideoEditPageState extends State<VideoEditPage> {
           data: data['data'],
           color: data['color'],
           font: data['font'],
+        );
+      case const Key('timer'):
+        return TimerWidget(
+          duration: Provider.of<DurationTimer>(context).timer,
+          createdAt: '2024-03-04T02:32:49.000000Z',
         );
       default:
         return const Text('data');

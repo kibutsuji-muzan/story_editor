@@ -7,6 +7,7 @@ import 'package:flutter_edit_story/main.dart';
 import 'package:flutter_edit_story/pages/test_copy.dart';
 import 'package:flutter_edit_story/var.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
+import 'package:flutter_edit_story/widgets/TimerWidget.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path/path.dart' as p;
@@ -261,6 +262,11 @@ class __widgetState extends State<_widget> {
           color: widget.data['color'].toString().hextocolor,
         ),
       );
+    } else if (widget.data['widget'].toString().contains('timer')) {
+      return TimerWidget(
+          duration: widget.data['duration'],
+          createdAt: widget.data['createdAt'],
+          isEditable: false);
     } else {
       return const Text('data');
     }

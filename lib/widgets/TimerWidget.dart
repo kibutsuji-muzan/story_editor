@@ -9,8 +9,14 @@ import 'package:wheel_chooser/wheel_chooser.dart';
 
 class TimerWidget extends StatefulWidget {
   String duration;
-  String createdAt;
-  TimerWidget({super.key, required this.duration, required this.createdAt});
+  String? createdAt;
+  bool isEditable;
+  TimerWidget({
+    super.key,
+    this.createdAt,
+    required this.duration,
+    required this.isEditable,
+  });
 
   @override
   State<TimerWidget> createState() => _TimerWidgetState();
@@ -22,20 +28,22 @@ class _TimerWidgetState extends State<TimerWidget> {
   String min = '00';
   String sec = '00';
   bool endCounter = false;
+  String nowtime = DateTime.now().toString();
   @override
   void initState() {
-    print(widget.duration);
-    print(widget.createdAt);
     timer =
         Timer.periodic(const Duration(seconds: 1), (timer) => setDuration());
     super.initState();
   }
 
   void setDuration() {
-    List<String> parts = widget.createdAt.split('T');
-
-    DateTime createdAt =
-        DateTime.parse('${parts[0]} ${parts[1].replaceAll('Z', '')}');
+    print(widget.createdAt);
+    DateTime createdAt = DateTime.parse(widget.createdAt ?? nowtime);
+    // if (!widget.isEditable) {
+    //   List<String> parts = widget.createdAt!.split('T');
+    //   DateTime createdAt =
+    //       DateTime.parse('${parts[0]} ${parts[1].replaceAll('Z', '')}');
+    // }
     DateTime storyTill = createdAt.add(const Duration(hours: 24));
     DateTime now = DateTime.now();
 
@@ -43,9 +51,6 @@ class _TimerWidgetState extends State<TimerWidget> {
     Duration duration = Duration(
       seconds: (dur.inSeconds - now.difference(createdAt).inSeconds),
     );
-    // print(duration);
-    // print(dur);
-    // print(now.difference(createdAt));
     String _dur = duration.format(DurationStyle.FORMAT_HH_MM_SS);
     if (!duration.isNegative) {
       var list = _dur.split(':');
@@ -62,7 +67,15 @@ class _TimerWidgetState extends State<TimerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return GestureDetector(
+      onTap: (widget.isEditable)
+          ? () => showModalBottomSheet(
+                context: context,
+                backgroundColor: const Color.fromRGBO(0, 0, 0, 0),
+                isScrollControlled: true,
+                builder: (context) => const TimerModal(),
+              )
+          : () {},
       child: Container(
         width: MediaQuery.of(context).size.width * 0.5,
         height: MediaQuery.of(context).size.height * 0.12,
@@ -248,13 +261,15 @@ class _TimerModalState extends State<TimerModal> {
                 ElevatedButton(
                   onPressed: () {
                     Provider.of<ActiveWidget>(context, listen: false)
-                        .addWidget({
+                        .addorupdatetimer({
                       'widget': const Key('timer'),
-                      'key': UniqueKey(),
-                      'duration': '$hours:$minutes:$seconds'
+                      'key': const Key('timer'),
+                      'duration': '$hours:$minutes:$seconds',
+                      'createdAt': DateTime.now().toString(),
                     });
                     Provider.of<DurationTimer>(context, listen: false)
                         .setTimer('$hours:$minutes:$seconds');
+                    Navigator.of(context).pop();
                   },
                   child: const Text(
                     'Submit',

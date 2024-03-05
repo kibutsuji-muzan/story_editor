@@ -4,7 +4,7 @@ import 'package:flutter_edit_story/widgets/MusicWidget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_edit_story/widgets/PollsWidget.dart';
 
-const String domain = 'ccab-103-211-53-86.ngrok-free.app';
+const String domain = 'cdff-103-211-53-1.ngrok-free.app';
 
 const String token = '1|rgAruaLeQLqTJvEzvoQm4vmNobCjjYujjnLX1osv11f2824a';
 
@@ -226,6 +226,26 @@ class ActiveWidget extends ChangeNotifier {
       }
     });
     notifyListeners();
+  }
+
+  void addorupdatetimer(Map<String, dynamic> widget) {
+    var a = _widgets.where((element) => element['widget'] == widget['widget']);
+    if (a.isEmpty) {
+      _widgets.add(widget);
+    } else {
+      a.first['duration'] = widget['duration'];
+    }
+    notifyListeners();
+  }
+
+  bool contains({required Key key}) {
+    bool res = false;
+    _widgets.forEach((element) {
+      if (element['key'] == key) {
+        res = true;
+      }
+    });
+    return res;
   }
 }
 

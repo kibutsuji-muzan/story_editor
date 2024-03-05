@@ -276,7 +276,12 @@ class _VideoEditPageState extends State<VideoEditPage> {
   }
 
   Widget widgetchooser({required Map<String, dynamic> data}) {
-    debugPrint(data.toString());
+    // if (data['key'].toString().contains('timer') &&
+    //     Provider.of<ActiveWidget>(context, listen: false)
+    //         .contains(key: data['key'])) {
+    //   Provider.of<ActiveWidget>(context, listen: false)
+    //       .removeKey(key: data['key']);
+    // }
     switch (data['widget']) {
       case const Key('gif'):
         return Image.network(data['link'], key: data['key']);
@@ -299,7 +304,8 @@ class _VideoEditPageState extends State<VideoEditPage> {
       case const Key('timer'):
         return TimerWidget(
           duration: Provider.of<DurationTimer>(context).timer,
-          createdAt: '2024-03-04T02:32:49.000000Z',
+          // createdAt: DateTime.now().toString(),
+          isEditable: true,
         );
       default:
         return const Text('data');

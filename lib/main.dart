@@ -38,12 +38,12 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Inter',
       ),
-      // home: const HomePage(),
+      home: const HomePage(),
       // home: TimerWidget(),
-      home: VideoEditPage(
-        file: XFile('assets/video.mp4'),
-        video: true,
-      ),
+      // home: VideoEditPage(
+      //   file: XFile('assets/video.mp4'),
+      //   video: true,
+      // ),
     );
   }
 }

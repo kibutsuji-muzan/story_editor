@@ -78,8 +78,8 @@ class _TimerWidgetState extends State<TimerWidget> {
           : () {},
       child: Container(
         width: MediaQuery.of(context).size.width * 0.5,
-        height: MediaQuery.of(context).size.height * 0.12,
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+        height: MediaQuery.of(context).size.height * 0.1,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
           boxShadow: const [
             BoxShadow(
@@ -93,16 +93,16 @@ class _TimerWidgetState extends State<TimerWidget> {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              'some even here!!!',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-            ),
+            // const Text(
+            //   'some even here!!!',
+            //   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            // ),
             !endCounter
                 ? Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _count(hr[0]),
                       _count(hr[1]),

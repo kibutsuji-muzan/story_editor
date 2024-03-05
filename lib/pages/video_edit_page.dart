@@ -553,7 +553,7 @@ class _VideoEditPageState extends State<VideoEditPage> {
                       ),
                     ),
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.14,
+                      width: MediaQuery.of(context).size.width * 0.15,
                       child: const Row(
                         children: [
                           Icon(

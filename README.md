@@ -1,75 +1,39 @@
-# ✍️ Story Editor
+<!--
+This README describes the package. If you publish this package to pub.dev,
+this README's contents appear on the landing page for your package.
 
-**Story Editor** is a cross-platform Flutter application designed to provide a seamless and intuitive experience for creating and editing stories. Whether you're drafting a short tale or compiling a longer narrative, Story Editor offers a user-friendly interface to bring your words to life.
+For information about how to write a good package README, see the guide for
+[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
 
-## 🚀 Features
+For general information about developing packages, see the Dart guide for
+[creating packages](https://dart.dev/guides/libraries/create-packages)
+and the Flutter guide for
+[developing packages and plugins](https://flutter.dev/to/develop-packages).
+-->
 
-- 📝 **Rich Text Editing** – Compose and format your stories with ease.
-- 📂 **Multi-Platform Support** – Compatible with Android, iOS, Web, Windows, macOS, and Linux.
-- 💾 **Local Storage** – Save your stories locally for offline access.
-- 🌐 **Web Integration** – Access and edit your stories directly from the web.
-- 🎨 **Customizable Themes** – Personalize the editor's appearance to suit your preferences.
+TODO: Put a short description of the package here that helps potential users
+know whether this package might be useful for them.
 
-## 🛠️ Installation
+## Features
 
-### Prerequisites
+TODO: List what your package can do. Maybe include images, gifs, or videos.
 
-- Flutter SDK: [Install Flutter](https://flutter.dev/docs/get-started/install)
-- Dart SDK
+## Getting started
 
-### Steps
+TODO: List prerequisites and provide or point to information on how to
+start using the package.
 
-1. Clone the repository:
+## Usage
 
-   ```bash
-   git clone https://github.com/kibutsuji-muzan/story_editor.git
-   cd story_editor
-   ```
+TODO: Include short and useful examples for package users. Add longer examples
+to `/example` folder.
 
-2. Install dependencies:
-
-   ```bash
-   flutter pub get
-   ```
-
-3. Run the application:
-
-   ```bash
-   flutter run
-   ```
-
-## 📁 Project Structure
-
-```
-story_editor/
-├── android/
-├── assets/
-├── ios/
-├── lib/
-│   └── main.dart
-├── linux/
-├── macos/
-├── test/
-├── web/
-├── windows/
-├── pubspec.yaml
-└── README.md
+```dart
+const like = 'sample';
 ```
 
-## 🤝 Contributing
+## Additional information
 
-Contributions are welcome! If you have suggestions or improvements, please fork the repository and submit a pull request.
-
-1. Fork the Project  
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)  
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)  
-4. Push to the Branch (`git push origin feature/AmazingFeature`)  
-5. Open a Pull Request  
-
-## 📄 License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-For more information, visit the [GitHub repository](https://github.com/kibutsuji-muzan/story_editor).
+TODO: Tell users more about the package: where to find more information, how to
+contribute to the package, how to file issues, what response they can expect
+from the package authors, and more.

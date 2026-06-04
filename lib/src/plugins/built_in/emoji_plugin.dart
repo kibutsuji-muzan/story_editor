@@ -1,23 +1,57 @@
 import 'package:flutter/material.dart';
 import '../../core/controllers/story_editor_controller.dart';
-import '../../core/models/text_layer.dart';
+import '../../core/models/editor_layer.dart';
+import '../../features/text/text_layer.dart';
+import '../../features/text/text_layer_widget.dart';
 import '../../core/utils/layer_utils.dart';
 import '../editor_plugin.dart';
 
 class EmojiPlugin extends EditorPlugin {
   const EmojiPlugin()
-      : super(
-          id: 'emoji_plugin',
-          name: 'Emojis',
-          icon: Icons.face_retouching_natural_rounded,
-        );
+    : super(
+        id: 'emoji',
+        name: 'Emojis',
+        icon: Icons.face_retouching_natural_rounded,
+      );
 
   @override
-  void onTap(BuildContext context, StoryEditorController controller) {
+  Widget buildLayer(BuildContext context, EditorLayer layer) {
+    return TextLayerWidget(layer: layer as TextLayer);
+  }
+
+  @override
+  EditorLayer createLayer() {
+    return TextLayer(id: '', text: '😀');
+  }
+
+  @override
+  Map<String, dynamic> toJson(EditorLayer layer) {
+    return (layer as TextLayer).toJson();
+  }
+
+  @override
+  EditorLayer fromJson(Map<String, dynamic> json) {
+    return TextLayer.fromJson(json);
+  }
+
+  @override
+  Future<void> onTap(
+    BuildContext context,
+    StoryEditorController controller,
+  ) async {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        final List<String> emojis = ['😀', '😍', '🔥', '🎉', '👏', '😂', '👍', '❤️'];
+        final List<String> emojis = [
+          '😀',
+          '😍',
+          '🔥',
+          '🎉',
+          '👏',
+          '😂',
+          '👍',
+          '❤️',
+        ];
         return Container(
           padding: const EdgeInsets.all(16),
           height: 150,

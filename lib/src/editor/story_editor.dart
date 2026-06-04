@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../core/controllers/story_editor_controller.dart';
-import 'story_canvas.dart';
-import 'editor_toolbar.dart';
+import 'package:story_editor/story_editor.dart';
 
 class StoryEditor extends StatelessWidget {
   final StoryEditorController controller;
+  final PluginRegistry? pluginRegistry;
   final VoidCallback? onTapText;
   final VoidCallback? onTapStickers;
   final VoidCallback? onTapMusic;
@@ -16,6 +14,7 @@ class StoryEditor extends StatelessWidget {
   const StoryEditor({
     super.key,
     required this.controller,
+    this.pluginRegistry,
     this.onTapText,
     this.onTapStickers,
     this.onTapMusic,
@@ -26,8 +25,10 @@ class StoryEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<StoryEditorController>.value(
-      value: controller,
+    final activeRegistry = pluginRegistry ?? PluginRegistry.instance;
+
+    return StoryEditorScope(
+      notifier: controller,
       child: Scaffold(
         appBar: AppBar(toolbarHeight: 0),
         backgroundColor: Colors.black,
@@ -35,70 +36,103 @@ class StoryEditor extends StatelessWidget {
           child: Stack(
             children: [
               // Main Canvas
-              // Container(color: Colors.white, width: 100, height: 100),
-              StoryCanvas(),
+              StoryCanvas(pluginRegistry: pluginRegistry),
 
               // Floating Toolbar at Top Center
               Positioned(
-                top: 20,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: EditorToolbar(
-                    onTapText: onTapText,
-                    onTapStickers: onTapStickers,
-                    onTapMusic: onTapMusic,
-                    onTapProduct: onTapProduct,
-                    isAudioMuted: isAudioMuted,
-                    onToggleAudio: onToggleAudio,
-                    hasVideo: controller.state.isVideo,
-                  ),
+                top: 10,
+                right: 10,
+                child: EditorToolbar(
+                  onTapText:
+                      onTapText ??
+                      () =>
+                          activeRegistry.handleTap('text', context, controller),
+                  onTapStickers:
+                      onTapStickers ??
+                      () => activeRegistry.handleTap(
+                        'sticker',
+                        context,
+                        controller,
+                      ),
+                  onTapMusic:
+                      onTapMusic ??
+                      () => activeRegistry.handleTap(
+                        'music',
+                        context,
+                        controller,
+                      ),
+                  onTapProduct: onTapProduct,
+                  isAudioMuted: isAudioMuted,
+                  onToggleAudio: onToggleAudio,
+                  hasVideo: controller.state.isVideo,
                 ),
               ),
 
               // Product Tag Indicator at Bottom Left
-              Consumer<StoryEditorController>(
-                builder: (context, controller, child) {
-                  final productId = controller.state.taggedProductId;
-                  if (productId == 0) return const SizedBox();
-                  return Positioned(
-                    bottom: 20,
-                    left: 20,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.white24),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.shopping_bag_rounded,
-                            color: Colors.greenAccent,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Tagged: #$productId',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+              // Consumer<StoryEditorController>(
+              //   builder: (context, controller, child) {
+              //     final productId = controller.state.taggedProductId;
+              //     if (productId == 0) return const SizedBox();
+              //     return Positioned(
+              //       bottom: 20,
+              //       left: 20,
+              //       child: Container(
+              //         padding: const EdgeInsets.symmetric(
+              //           horizontal: 12,
+              //           vertical: 6,
+              //         ),
+              //         decoration: BoxDecoration(
+              //           color: Colors.black54,
+              //           borderRadius: BorderRadius.circular(15),
+              //           border: Border.all(color: Colors.white24),
+              //         ),
+              //         child: Row(
+              //           children: [
+              //             const Icon(
+              //               Icons.shopping_bag_rounded,
+              //               color: Colors.greenAccent,
+              //               size: 16,
+              //             ),
+              //             const SizedBox(width: 6),
+              //             Text(
+              //               'Tagged: #$productId',
+              //               style: const TextStyle(
+              //                 color: Colors.white,
+              //                 fontSize: 12,
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     );
+              //   },
+              // ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class StoryEditorScope extends InheritedNotifier<StoryEditorController> {
+  const StoryEditorScope({
+    super.key,
+    required StoryEditorController super.notifier,
+    required super.child,
+  });
+
+  static StoryEditorController of(BuildContext context, {bool listen = true}) {
+    if (listen) {
+      final scope = context
+          .dependOnInheritedWidgetOfExactType<StoryEditorScope>();
+      assert(scope != null, 'No StoryEditorScope found in context');
+      return scope!.notifier!;
+    } else {
+      final element = context
+          .getElementForInheritedWidgetOfExactType<StoryEditorScope>();
+      assert(element != null, 'No StoryEditorScope found in context');
+      return (element!.widget as StoryEditorScope).notifier!;
+    }
   }
 }

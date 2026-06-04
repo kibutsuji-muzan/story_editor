@@ -1,19 +1,46 @@
 import 'package:flutter/material.dart';
 import '../../core/controllers/story_editor_controller.dart';
-import '../../core/models/sticker_layer.dart';
+import '../../core/models/editor_layer.dart';
+import '../../features/sticker/sticker_layer.dart';
+import '../../features/sticker/sticker_layer_widget.dart';
 import '../../core/utils/layer_utils.dart';
 import '../editor_plugin.dart';
 
 class StickerPlugin extends EditorPlugin {
   const StickerPlugin()
-      : super(
-          id: 'sticker_plugin',
-          name: 'Stickers',
-          icon: Icons.layers_rounded,
-        );
+    : super(id: 'sticker', name: 'Stickers', icon: Icons.layers_rounded);
 
   @override
-  void onTap(BuildContext context, StoryEditorController controller) {
+  Set<LayerType> get supportedLayerTypes => const {LayerType.sticker};
+
+  @override
+  Set<String> get supportedWidgetTypes => const {'sticker', 'gif'};
+
+  @override
+  EditorLayer createLayer() {
+    return StickerLayer(id: '', url: '');
+  }
+
+  @override
+  Widget buildLayer(BuildContext context, EditorLayer layer) {
+    return StickerLayerWidget(layer: layer as StickerLayer);
+  }
+
+  @override
+  Map<String, dynamic> toJson(EditorLayer layer) {
+    return (layer as StickerLayer).toJson();
+  }
+
+  @override
+  EditorLayer fromJson(Map<String, dynamic> json) {
+    return StickerLayer.fromJson(json);
+  }
+
+  @override
+  Future<void> onTap(
+    BuildContext context,
+    StoryEditorController controller,
+  ) async {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -28,7 +55,10 @@ class StickerPlugin extends EditorPlugin {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Add Preset Gifs', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Add Preset Gifs',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 12),
               Expanded(
                 child: ListView.builder(
@@ -54,7 +84,10 @@ class StickerPlugin extends EditorPlugin {
                           border: Border.all(color: Colors.white24),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Image.network(stickerUrls[index], fit: BoxFit.cover),
+                        child: Image.network(
+                          stickerUrls[index],
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     );
                   },

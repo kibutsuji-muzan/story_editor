@@ -1,0 +1,49 @@
+Running `(cd /Users/sukuna/.pub-cache/hosted/pub.dev/objective_c-9.4.1/; TMPDIR=/var/folders/qb/sb31w1297mqf17_29z567fg00000gn/T/ PATH=/Users/sukuna/fvm/versions/3.44.0/bin:/opt/local/bin:/opt/local/sbin:/Applications/Postgres.app/Contents/Versions/16/bin/:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Users/sukuna/.codex/tmp/arg0/codex-arg0oPlNba:/Users/sukuna/.antigravity-ide/antigravity-ide/bin:/Users/sukuna/.antigravity/antigravity/bin:/Users/sukuna/.local/bin:/opt/miniconda3/bin:/opt/homebrew/opt/openjdk/bin:/opt/local/bin:/opt/local/sbin:/Applications/Postgres.app/Contents/Versions/16/bin/:/Users/sukuna/.pub-cache/bin:/Applications/Codex.app/Contents/Resources HOME=/Users/sukuna /Volumes/ExternalDrive/fvm/versions/3.44.0/bin/cache/dart-sdk/bin/dart --packages=/Volumes/ExternalDrive/Projects/story_editor/.dart_tool/package_config.json /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/objective_c/de310349bc/hook.dill --config=/Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/objective_c/de310349bc/input.json )`.
+INFO: 2026-06-04 20:52:40.040671: Using compiler /Library/Developer/CommandLineTools/usr/bin/clang from BuildInput.cCompiler.cc.
+
+INFO: 2026-06-04 20:52:40.044464: Running: /Library/Developer/CommandLineTools/usr/bin/clang -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -target arm64-apple-darwin -mmacos-version-min=13 -c /Users/sukuna/.pub-cache/hosted/pub.dev/objective_c-9.4.1/src/include/dart_api_dl.c -fpic -gline-tables-only -I src -o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/include/dart_api_dl.c.o
+
+INFO: 2026-06-04 20:52:40.045633: Running: /Library/Developer/CommandLineTools/usr/bin/clang -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -target arm64-apple-darwin -mmacos-version-min=13 -c /Users/sukuna/.pub-cache/hosted/pub.dev/objective_c-9.4.1/src/objective_c.c -fpic -gline-tables-only -I src -o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/objective_c.c.o
+
+INFO: 2026-06-04 20:52:40.046257: Running: /Library/Developer/CommandLineTools/usr/bin/clang -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -target arm64-apple-darwin -mmacos-version-min=13 -x objective-c -fobjc-arc -c /Users/sukuna/.pub-cache/hosted/pub.dev/objective_c-9.4.1/src/protocol.m -fpic -gline-tables-only -I src -o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/protocol.m.o
+
+obj/src/objective_c_bindings_generated.m.o
+
+INFO: 2026-06-04 20:52:40.401594: 
+INFO: 2026-06-04 20:52:40.401770: 
+INFO: 2026-06-04 20:52:40.401800: Generated /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/objective_c.c.o
+
+INFO: 2026-06-04 20:52:40.402099: 
+INFO: 2026-06-04 20:52:40.402119: 
+INFO: 2026-06-04 20:52:40.402133: Generated /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/include/dart_api_dl.c.o
+
+INFO: 2026-06-04 20:52:40.402730: 
+INFO: 2026-06-04 20:52:40.402749: 
+INFO: 2026-06-04 20:52:40.402761: Generated /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/observer.m.o
+
+INFO: 2026-06-04 20:52:40.403577: 
+INFO: 2026-06-04 20:52:40.403649: 
+INFO: 2026-06-04 20:52:40.403669: Generated /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/protocol.m.o
+
+INFO: 2026-06-04 20:52:40.669274: 
+INFO: 2026-06-04 20:52:40.669330: 
+INFO: 2026-06-04 20:52:40.669343: Generated /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/ns_number.m.o
+
+INFO: 2026-06-04 20:52:40.678067: 
+INFO: 2026-06-04 20:52:40.678111: 
+INFO: 2026-06-04 20:52:40.678122: Generated /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/objective_c.m.o
+
+INFO: 2026-06-04 20:52:40.681174: 
+INFO: 2026-06-04 20:52:40.681204: 
+INFO: 2026-06-04 20:52:40.681215: Generated /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/input_stream_adapter.m.o
+
+INFO: 2026-06-04 20:52:40.696460: 
+INFO: 2026-06-04 20:52:40.696481: 
+INFO: 2026-06-04 20:52:40.696494: Generated /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/objective_c_bindings_generated.m.o
+
+INFO: 2026-06-04 20:52:40.696810: Running: /Library/Developer/CommandLineTools/usr/bin/clang -shared -Wl,-encryptable -undefined dynamic_lookup -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -target arm64-apple-darwin -mmacos-version-min=13 /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/include/dart_api_dl.c.o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/objective_c.c.o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/input_stream_adapter.m.o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/objective_c.m.o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/observer.m.o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/ns_number.m.o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/protocol.m.o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/obj/src/objective_c_bindings_generated.m.o -o /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/objective_c.dylib
+
+INFO: 2026-06-04 20:52:42.733049: 
+INFO: 2026-06-04 20:52:42.733240: 
+INFO: 2026-06-04 20:52:42.733258: Generated /Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/de310349bc/objective_c.dylib
+

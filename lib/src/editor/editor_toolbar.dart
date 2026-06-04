@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../core/controllers/story_editor_controller.dart';
+import 'package:story_editor/story_editor.dart';
 
 class EditorToolbar extends StatelessWidget {
   final VoidCallback? onTapText;
@@ -25,36 +24,31 @@ class EditorToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<StoryEditorController>();
+    final controller = StoryEditorScope.of(context);
     final canUndo = controller.history.canUndo;
     final canRedo = controller.history.canRedo;
-    final hasTaggedProduct = controller.state.taggedProductId != 0;
-
+    final pluginRegistry = PluginRegistry.instance;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
+      borderRadius: BorderRadius.circular(100),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
           decoration: BoxDecoration(
-            color: Colors.black.withAlpha(80),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: Colors.white.withAlpha(40),
-              width: 1.5,
-            ),
+            color: Colors.black.withAlpha(50),
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(color: Colors.white.withAlpha(40), width: 1.5),
           ),
-          child: Row(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Undo
+              //Undo
               _buildIconButton(
                 icon: Icons.undo_rounded,
                 onPressed: canUndo ? controller.undo : null,
                 color: canUndo ? Colors.white : Colors.white24,
                 tooltip: 'Undo',
               ),
-              const SizedBox(width: 8),
               // Redo
               _buildIconButton(
                 icon: Icons.redo_rounded,
@@ -63,47 +57,13 @@ class EditorToolbar extends StatelessWidget {
                 tooltip: 'Redo',
               ),
               _buildDivider(),
-              // Text
-              _buildIconButton(
-                icon: Icons.text_fields_rounded,
-                onPressed: onTapText,
-                tooltip: 'Add Text',
-              ),
-              const SizedBox(width: 8),
-              // Stickers
-              _buildIconButton(
-                icon: Icons.emoji_emotions_rounded,
-                onPressed: onTapStickers,
-                tooltip: 'Stickers & Emojis',
-              ),
-              const SizedBox(width: 8),
-              // Music
-              _buildIconButton(
-                icon: Icons.music_note_rounded,
-                onPressed: onTapMusic,
-                tooltip: 'Add Music',
-              ),
-              const SizedBox(width: 8),
-              // Tag Product
-              _buildIconButton(
-                icon: hasTaggedProduct
-                    ? Icons.shopping_bag_rounded
-                    : Icons.shopping_bag_outlined,
-                onPressed: onTapProduct,
-                color: hasTaggedProduct ? Colors.greenAccent : Colors.white,
-                tooltip: 'Tag Product',
-              ),
-              if (hasVideo) ...[
-                _buildDivider(),
-                // Mute/Unmute
-                _buildIconButton(
-                  icon: isAudioMuted
-                      ? Icons.volume_off_rounded
-                      : Icons.volume_up_rounded,
-                  onPressed: onToggleAudio,
-                  tooltip: 'Mute/Unmute Video',
-                ),
-              ],
+              ...pluginRegistry.plugins.map((plugin) {
+                return _buildIconButton(
+                  icon: plugin.icon,
+                  onPressed: () => plugin.onTap(context, controller),
+                  tooltip: plugin.name,
+                );
+              }),
             ],
           ),
         ),
@@ -130,8 +90,8 @@ class EditorToolbar extends StatelessWidget {
 
   Widget _buildDivider() {
     return Container(
-      height: 24,
-      width: 1,
+      height: 1,
+      width: 24,
       margin: const EdgeInsets.symmetric(horizontal: 12),
       color: Colors.white24,
     );

@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import '../core/controllers/story_editor_controller.dart';
+import 'package:story_editor/story_editor.dart';
 import '../layers/widgets/layer_frame.dart';
 import '../layers/renderers/layer_renderer.dart';
+import '../plugins/plugin_registry.dart';
 
 class StoryCanvas extends StatefulWidget {
-  const StoryCanvas({super.key});
+  final PluginRegistry? pluginRegistry;
+
+  const StoryCanvas({super.key, this.pluginRegistry});
 
   @override
   State<StoryCanvas> createState() => _StoryCanvasState();
@@ -20,7 +22,7 @@ class _StoryCanvasState extends State<StoryCanvas> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final controller = context.watch<StoryEditorController>();
+    final controller = StoryEditorScope.of(context);
     final state = controller.state;
 
     if (state.isVideo && state.backgroundPath != null) {
@@ -59,6 +61,21 @@ class _StoryCanvasState extends State<StoryCanvas> {
     _isVideoInitialized = false;
   }
 
+  Widget _buildBackgroundImage(String path) {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return Image.network(path, fit: BoxFit.cover);
+    } else if (path.startsWith('assets/') || !path.startsWith('/')) {
+      final isPackageAsset = path == 'assets/img.jpg';
+      return Image.asset(
+        path,
+        package: isPackageAsset ? 'story_editor' : null,
+        fit: BoxFit.cover,
+      );
+    } else {
+      return Image.file(File(path), fit: BoxFit.cover);
+    }
+  }
+
   @override
   void dispose() {
     _disposeVideo();
@@ -67,17 +84,18 @@ class _StoryCanvasState extends State<StoryCanvas> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<StoryEditorController>();
+    final controller = StoryEditorScope.of(context);
     final state = controller.state;
 
     return GestureDetector(
       onTap: () {
         controller.deselect();
       },
-      child: Container(
-        color: Colors.black,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox.expand(
         child: Stack(
           alignment: Alignment.center,
+          clipBehavior: Clip.none,
           children: [
             // 1. Background Media Layer
             if (state.backgroundPath != null) ...[
@@ -96,10 +114,7 @@ class _StoryCanvasState extends State<StoryCanvas> {
                 )
               else if (!state.isVideo)
                 SizedBox.expand(
-                  child: Image.file(
-                    File(state.backgroundPath!),
-                    fit: BoxFit.cover,
-                  ),
+                  child: _buildBackgroundImage(state.backgroundPath!),
                 ),
             ],
             // 2. Interactive Layers Stack
@@ -107,7 +122,10 @@ class _StoryCanvasState extends State<StoryCanvas> {
               return LayerFrame(
                 key: ValueKey(layer.id),
                 layer: layer,
-                child: LayerRenderer.render(layer),
+                child: LayerRenderer.render(
+                  layer,
+                  registry: widget.pluginRegistry,
+                ),
               );
             }),
           ],

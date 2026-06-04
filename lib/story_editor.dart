@@ -1,15 +1,13 @@
-library story_editor;
-
 // Core Models
 export 'src/core/models/editor_layer.dart';
 export 'src/core/models/transform_data.dart';
 export 'src/core/models/editor_state.dart';
-export 'src/core/models/text_layer.dart';
-export 'src/core/models/image_layer.dart';
-export 'src/core/models/sticker_layer.dart';
-export 'src/core/models/timer_layer.dart';
-export 'src/core/models/polls_layer.dart';
-export 'src/core/models/music_layer.dart';
+export 'src/features/text/text_layer.dart';
+export 'src/features/image/image_layer.dart';
+export 'src/features/sticker/sticker_layer.dart';
+export 'src/features/timer/timer_layer.dart';
+export 'src/features/polls/polls_layer.dart';
+export 'src/features/music/music_layer.dart';
 
 // Core Controllers
 export 'src/core/controllers/story_editor_controller.dart';
@@ -55,7 +53,12 @@ export 'src/animations/presets/scale_animation.dart';
 export 'src/plugins/editor_plugin.dart';
 export 'src/plugins/plugin_registry.dart';
 export 'src/plugins/built_in/emoji_plugin.dart';
+export 'src/plugins/built_in/image_plugin.dart';
+export 'src/plugins/built_in/music_plugin.dart';
+export 'src/plugins/built_in/polls_plugin.dart';
 export 'src/plugins/built_in/sticker_plugin.dart';
+export 'src/plugins/built_in/text_plugin.dart';
+export 'src/plugins/built_in/timer_plugin.dart';
 
 // Exporters & Pipeline
 export 'src/export/image_exporter.dart';

@@ -1,0 +1,29 @@
+{
+  "assets": {},
+  "config": {
+    "build_asset_types": [
+      "code_assets/code"
+    ],
+    "extensions": {
+      "code_assets": {
+        "c_compiler": {
+          "ar": "/Library/Developer/CommandLineTools/usr/bin/ar",
+          "cc": "/Library/Developer/CommandLineTools/usr/bin/clang",
+          "ld": "/Library/Developer/CommandLineTools/usr/bin/ld"
+        },
+        "link_mode_preference": "dynamic",
+        "macos": {
+          "target_version": 13
+        },
+        "target_architecture": "arm64",
+        "target_os": "macos"
+      }
+    },
+    "linking_enabled": false
+  },
+  "out_dir_shared": "/Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/shared/objective_c/build/",
+  "out_file": "/Volumes/ExternalDrive/Projects/story_editor/.dart_tool/hooks_runner/objective_c/de310349bc/output.json",
+  "package_name": "objective_c",
+  "package_root": "/Users/sukuna/.pub-cache/hosted/pub.dev/objective_c-9.4.1/",
+  "user_defines": {}
+}

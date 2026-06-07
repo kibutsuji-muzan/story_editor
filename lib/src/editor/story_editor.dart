@@ -10,6 +10,7 @@ class StoryEditor extends StatelessWidget {
   final VoidCallback? onTapProduct;
   final bool isAudioMuted;
   final VoidCallback? onToggleAudio;
+  final VoidCallback? onTapClose;
 
   const StoryEditor({
     super.key,
@@ -21,6 +22,7 @@ class StoryEditor extends StatelessWidget {
     this.onTapProduct,
     this.isAudioMuted = false,
     this.onToggleAudio,
+    this.onTapClose,
   });
 
   @override
@@ -41,6 +43,7 @@ class StoryEditor extends StatelessWidget {
               // Floating Toolbar at Top Center
               Positioned(
                 top: 10,
+                left: 10,
                 right: 10,
                 child: EditorToolbar(
                   onTapText:
@@ -65,6 +68,7 @@ class StoryEditor extends StatelessWidget {
                   isAudioMuted: isAudioMuted,
                   onToggleAudio: onToggleAudio,
                   hasVideo: controller.state.isVideo,
+                  onTapClose: onTapClose,
                 ),
               ),
 

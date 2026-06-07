@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:story_editor/story_editor.dart';
 
-class EditorToolbar extends StatelessWidget {
+class EditorToolbar extends StatefulWidget {
   final VoidCallback? onTapText;
   final VoidCallback? onTapStickers;
   final VoidCallback? onTapMusic;
@@ -10,6 +10,7 @@ class EditorToolbar extends StatelessWidget {
   final bool isAudioMuted;
   final VoidCallback? onToggleAudio;
   final bool hasVideo;
+  final VoidCallback? onTapClose;
 
   const EditorToolbar({
     super.key,
@@ -20,51 +21,130 @@ class EditorToolbar extends StatelessWidget {
     this.isAudioMuted = false,
     this.onToggleAudio,
     this.hasVideo = false,
+    this.onTapClose,
   });
+
+  @override
+  State<EditorToolbar> createState() => _EditorToolbarState();
+}
+
+class _EditorToolbarState extends State<EditorToolbar> {
+  final pluginRegistry = PluginRegistry.instance;
+  bool showAllTools = false;
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final controller = StoryEditorScope.of(context);
     final canUndo = controller.history.canUndo;
     final canRedo = controller.history.canRedo;
-    final pluginRegistry = PluginRegistry.instance;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Close Button
+        _buildIconButton(
+          icon: Icons.close_rounded,
+          onPressed:
+              widget.onTapClose ?? () => Navigator.of(context).maybePop(),
+          tooltip: 'Close',
+        ),
+        // Actions
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //Undo
+            _buildIconButton(
+              icon: Icons.undo_rounded,
+              onPressed: canUndo ? controller.undo : null,
+              color: canUndo ? Colors.black : Colors.black54,
+              tooltip: 'Undo',
+            ),
+            // Redo
+            _buildIconButton(
+              icon: Icons.redo_rounded,
+              onPressed: canRedo ? controller.redo : null,
+              color: canRedo ? Colors.black : Colors.black54,
+              tooltip: 'Redo',
+            ),
+            const SizedBox(width: 8),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * 0.5,
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                physics: const BouncingScrollPhysics(),
+                controller: _scrollController,
+                child: Column(
+                  children: [
+                    _buildBackDropFilter(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          for (
+                            int i = 0;
+                            i < pluginRegistry.plugins.length;
+                            i++
+                          )
+                            if (i < 5 || showAllTools)
+                              _buildIconButton(
+                                icon: pluginRegistry.plugins[i].icon,
+                                onPressed: () => pluginRegistry.plugins[i]
+                                    .onTap(context, controller),
+                                tooltip: pluginRegistry.plugins[i].name,
+                              ),
+                        ],
+                      ),
+                    ),
+                    if (pluginRegistry.plugins.length > 5)
+                      _buildIconButton(
+                        size: const Size(35, 20),
+                        icon: showAllTools
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.keyboard_arrow_down_rounded,
+                        onPressed: () =>
+                            setState(() => showAllTools = !showAllTools),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBackDropFilter({required Widget child}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(100),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-          decoration: BoxDecoration(
-            color: Colors.black.withAlpha(50),
-            borderRadius: BorderRadius.circular(100),
-            border: Border.all(color: Colors.white.withAlpha(40), width: 1.5),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              //Undo
-              _buildIconButton(
-                icon: Icons.undo_rounded,
-                onPressed: canUndo ? controller.undo : null,
-                color: canUndo ? Colors.white : Colors.white24,
-                tooltip: 'Undo',
-              ),
-              // Redo
-              _buildIconButton(
-                icon: Icons.redo_rounded,
-                onPressed: canRedo ? controller.redo : null,
-                color: canRedo ? Colors.white : Colors.white24,
-                tooltip: 'Redo',
-              ),
-              _buildDivider(),
-              ...pluginRegistry.plugins.map((plugin) {
-                return _buildIconButton(
-                  icon: plugin.icon,
-                  onPressed: () => plugin.onTap(context, controller),
-                  tooltip: plugin.name,
-                );
-              }),
-            ],
+      child: AnimatedSize(
+        alignment: Alignment.topCenter,
+        duration: Duration(milliseconds: 500),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+          child: Container(
+            constraints: BoxConstraints(maxHeight: context.screenHeight * 0.6),
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.black.withAlpha(85),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: child,
           ),
         ),
       ),
@@ -72,28 +152,26 @@ class EditorToolbar extends StatelessWidget {
   }
 
   Widget _buildIconButton({
+    Size? size = const Size(35, 35),
     required IconData icon,
     required VoidCallback? onPressed,
-    Color color = Colors.white,
+    Color color = Colors.black,
     String? tooltip,
   }) {
     return IconButton(
-      icon: Icon(icon, color: color, size: 24),
+      style: IconButton.styleFrom(
+        elevation: 2,
+        shadowColor: color,
+        padding: EdgeInsets.all(0),
+        hoverColor: Colors.white12,
+        backgroundColor: Colors.white,
+        highlightColor: Colors.white24,
+        disabledBackgroundColor: Colors.white,
+        minimumSize: size,
+      ),
+      icon: Icon(icon, color: color, size: 18),
       onPressed: onPressed,
       tooltip: tooltip,
-      style: IconButton.styleFrom(
-        hoverColor: Colors.white12,
-        highlightColor: Colors.white24,
-      ),
-    );
-  }
-
-  Widget _buildDivider() {
-    return Container(
-      height: 1,
-      width: 24,
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      color: Colors.white24,
     );
   }
 }

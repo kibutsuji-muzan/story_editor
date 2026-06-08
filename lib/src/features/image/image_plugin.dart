@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../story_editor.dart';
 import '../../core/controllers/story_editor_controller.dart';
 import '../../core/models/editor_layer.dart';
 import '../../features/image/image_layer.dart';
 import '../../features/image/image_layer_widget.dart';
-import '../editor_plugin.dart';
 
 class ImagePlugin extends EditorPlugin {
   const ImagePlugin()

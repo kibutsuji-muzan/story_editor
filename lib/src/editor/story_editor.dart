@@ -45,31 +45,7 @@ class StoryEditor extends StatelessWidget {
                 top: 10,
                 left: 10,
                 right: 10,
-                child: EditorToolbar(
-                  onTapText:
-                      onTapText ??
-                      () =>
-                          activeRegistry.handleTap('text', context, controller),
-                  onTapStickers:
-                      onTapStickers ??
-                      () => activeRegistry.handleTap(
-                        'sticker',
-                        context,
-                        controller,
-                      ),
-                  onTapMusic:
-                      onTapMusic ??
-                      () => activeRegistry.handleTap(
-                        'music',
-                        context,
-                        controller,
-                      ),
-                  onTapProduct: onTapProduct,
-                  isAudioMuted: isAudioMuted,
-                  onToggleAudio: onToggleAudio,
-                  hasVideo: controller.state.isVideo,
-                  onTapClose: onTapClose,
-                ),
+                child: EditorToolbar(onTapClose: onTapClose),
               ),
 
               // Product Tag Indicator at Bottom Left

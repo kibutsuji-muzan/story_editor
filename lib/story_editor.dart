@@ -52,13 +52,12 @@ export 'src/animations/presets/scale_animation.dart';
 // Plugins Interface & Registry
 export 'src/plugins/editor_plugin.dart';
 export 'src/plugins/plugin_registry.dart';
-export 'src/plugins/built_in/emoji_plugin.dart';
-export 'src/plugins/built_in/image_plugin.dart';
-export 'src/plugins/built_in/music_plugin.dart';
-export 'src/plugins/built_in/polls_plugin.dart';
-export 'src/plugins/built_in/sticker_plugin.dart';
-export 'src/plugins/built_in/text_plugin.dart';
-export 'src/plugins/built_in/timer_plugin.dart';
+export 'src/features/image/image_plugin.dart';
+export 'src/features/music/music_plugin.dart';
+export 'src/features/polls/polls_plugin.dart';
+export 'src/features/sticker/sticker_plugin.dart';
+export 'src/features/text/text_plugin.dart';
+export 'src/features/timer/timer_plugin.dart';
 
 // Exporters & Pipeline
 export 'src/export/image_exporter.dart';

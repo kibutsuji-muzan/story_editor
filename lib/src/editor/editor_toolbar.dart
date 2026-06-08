@@ -3,26 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:story_editor/story_editor.dart';
 
 class EditorToolbar extends StatefulWidget {
-  final VoidCallback? onTapText;
-  final VoidCallback? onTapStickers;
-  final VoidCallback? onTapMusic;
-  final VoidCallback? onTapProduct;
-  final bool isAudioMuted;
-  final VoidCallback? onToggleAudio;
-  final bool hasVideo;
   final VoidCallback? onTapClose;
+  final ToolbarTheme? theme;
 
-  const EditorToolbar({
-    super.key,
-    this.onTapText,
-    this.onTapStickers,
-    this.onTapMusic,
-    this.onTapProduct,
-    this.isAudioMuted = false,
-    this.onToggleAudio,
-    this.hasVideo = false,
-    this.onTapClose,
-  });
+  const EditorToolbar({super.key, this.onTapClose, this.theme});
 
   @override
   State<EditorToolbar> createState() => _EditorToolbarState();
@@ -32,6 +16,8 @@ class _EditorToolbarState extends State<EditorToolbar> {
   final pluginRegistry = PluginRegistry.instance;
   bool showAllTools = false;
   late final ScrollController _scrollController;
+
+  ToolbarTheme get theme => widget.theme ?? const ToolbarTheme();
 
   @override
   void initState() {
@@ -60,6 +46,7 @@ class _EditorToolbarState extends State<EditorToolbar> {
           onPressed:
               widget.onTapClose ?? () => Navigator.of(context).maybePop(),
           tooltip: 'Close',
+          color: theme.activeIconColor,
         ),
         // Actions
         Row(
@@ -70,58 +57,50 @@ class _EditorToolbarState extends State<EditorToolbar> {
             _buildIconButton(
               icon: Icons.undo_rounded,
               onPressed: canUndo ? controller.undo : null,
-              color: canUndo ? Colors.black : Colors.black54,
+              color: canUndo ? theme.activeIconColor : theme.inactiveIconColor,
               tooltip: 'Undo',
             ),
             // Redo
             _buildIconButton(
               icon: Icons.redo_rounded,
               onPressed: canRedo ? controller.redo : null,
-              color: canRedo ? Colors.black : Colors.black54,
+              color: canRedo ? theme.activeIconColor : theme.inactiveIconColor,
               tooltip: 'Redo',
             ),
             const SizedBox(width: 8),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.sizeOf(context).height * 0.5,
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                physics: const BouncingScrollPhysics(),
-                controller: _scrollController,
-                child: Column(
-                  children: [
-                    _buildBackDropFilter(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          for (
-                            int i = 0;
-                            i < pluginRegistry.plugins.length;
-                            i++
-                          )
-                            if (i < 5 || showAllTools)
-                              _buildIconButton(
-                                icon: pluginRegistry.plugins[i].icon,
-                                onPressed: () => pluginRegistry.plugins[i]
-                                    .onTap(context, controller),
-                                tooltip: pluginRegistry.plugins[i].name,
+            Column(
+              children: [
+                _buildBackDropFilter(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (int i = 0; i < pluginRegistry.plugins.length; i++)
+                          if (i < 5 || showAllTools)
+                            _buildIconButton(
+                              icon: pluginRegistry.plugins[i].icon,
+                              onPressed: () => pluginRegistry.plugins[i].onTap(
+                                context,
+                                controller,
                               ),
-                        ],
-                      ),
+                              tooltip: pluginRegistry.plugins[i].name,
+                              color: theme.activeIconColor,
+                            ),
+                      ],
                     ),
-                    if (pluginRegistry.plugins.length > 5)
-                      _buildIconButton(
-                        size: const Size(35, 20),
-                        icon: showAllTools
-                            ? Icons.keyboard_arrow_up_rounded
-                            : Icons.keyboard_arrow_down_rounded,
-                        onPressed: () =>
-                            setState(() => showAllTools = !showAllTools),
-                      ),
-                  ],
+                  ),
                 ),
-              ),
+                if (pluginRegistry.plugins.length > 5)
+                  _buildIconButton(
+                    size: Size(theme.buttonSize.width, 20),
+                    icon: showAllTools
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.keyboard_arrow_down_rounded,
+                    onPressed: () =>
+                        setState(() => showAllTools = !showAllTools),
+                    color: theme.activeIconColor,
+                  ),
+              ],
             ),
           ],
         ),
@@ -131,18 +110,23 @@ class _EditorToolbarState extends State<EditorToolbar> {
 
   Widget _buildBackDropFilter({required Widget child}) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: theme.barBorderRadius,
       child: AnimatedSize(
         alignment: Alignment.topCenter,
-        duration: Duration(milliseconds: 500),
+        duration: theme.animationDuration,
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+          filter: ImageFilter.blur(
+            sigmaX: theme.blurSigma,
+            sigmaY: theme.blurSigma,
+          ),
           child: Container(
-            constraints: BoxConstraints(maxHeight: context.screenHeight * 0.6),
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+            constraints: BoxConstraints(
+              maxHeight: context.screenHeight * theme.barMaxHeightFactor,
+            ),
+            // padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
             decoration: BoxDecoration(
-              color: Colors.black.withAlpha(85),
-              borderRadius: BorderRadius.circular(100),
+              color: theme.barColor,
+              borderRadius: theme.barBorderRadius,
             ),
             child: child,
           ),
@@ -152,26 +136,32 @@ class _EditorToolbarState extends State<EditorToolbar> {
   }
 
   Widget _buildIconButton({
-    Size? size = const Size(35, 35),
+    Size? size,
     required IconData icon,
     required VoidCallback? onPressed,
-    Color color = Colors.black,
+    required Color color,
     String? tooltip,
   }) {
-    return IconButton(
-      style: IconButton.styleFrom(
-        elevation: 2,
-        shadowColor: color,
-        padding: EdgeInsets.all(0),
-        hoverColor: Colors.white12,
-        backgroundColor: Colors.white,
-        highlightColor: Colors.white24,
-        disabledBackgroundColor: Colors.white,
-        minimumSize: size,
+    final effectiveSize = size ?? theme.buttonSize;
+    return Container(
+      width: effectiveSize.width,
+      height: effectiveSize.height,
+      margin: theme.buttonMargin,
+      child: IconButton(
+        style: IconButton.styleFrom(
+          elevation: theme.buttonElevation,
+          shadowColor: color,
+          padding: EdgeInsets.all(0),
+          hoverColor: theme.buttonHoverColor,
+          backgroundColor: theme.buttonBackgroundColor,
+          highlightColor: theme.buttonHighlightColor,
+          disabledBackgroundColor: theme.buttonDisabledBackgroundColor,
+          minimumSize: effectiveSize,
+        ),
+        icon: Icon(icon, color: color, size: theme.iconSize),
+        onPressed: onPressed,
+        tooltip: tooltip,
       ),
-      icon: Icon(icon, color: color, size: 18),
-      onPressed: onPressed,
-      tooltip: tooltip,
     );
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/controllers/story_editor_controller.dart';
 import '../../core/models/editor_layer.dart';
-import '../../features/music/music_layer.dart';
-import '../editor_plugin.dart';
+import 'music_layer.dart';
+import '../../plugins/editor_plugin.dart';
 
 class MusicPlugin extends EditorPlugin {
   const MusicPlugin()

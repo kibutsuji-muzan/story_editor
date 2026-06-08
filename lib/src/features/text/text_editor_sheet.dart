@@ -11,17 +11,13 @@ import 'package:story_editor/story_editor.dart';
 //         └── text_plugin.dart
 
 class TextEditorSheet extends StatefulWidget {
-  final Function? notifyParent;
-  final String? data;
-  final String? color;
-  final String? font;
+  final StoryEditorController controller;
+  final TextLayer? existingLayer;
 
   const TextEditorSheet({
     super.key,
-    this.data,
-    this.color,
-    this.font,
-    this.notifyParent,
+    required this.controller,
+    this.existingLayer,
   });
 
   @override
@@ -30,49 +26,121 @@ class TextEditorSheet extends StatefulWidget {
 
 class _TextEditorSheetState extends State<TextEditorSheet> {
   final TextEditingController _txtcontroller = TextEditingController();
-  late final CarouselController _carouselController;
+  late final CarouselController _fontcarouselController;
+  late final CarouselController _colorcarouselController;
   int findex = 0;
   int cindex = 0;
 
   FocusNode focusNode = FocusNode();
+  late final String _layerId;
+  late final bool _isNewLayer;
 
   @override
   void initState() {
     super.initState();
-    debugPrint(widget.color);
-    debugPrint(widget.font);
-    if (widget.color != null) {
-      final colorIdx = EditorDefaults.defaultColors.indexOf(widget.color!);
+    _isNewLayer = widget.existingLayer == null;
+    _layerId = widget.existingLayer?.id ?? LayerUtils.generateUniqueId('text');
+
+    if (!_isNewLayer) {
+      final existing = widget.existingLayer!;
+      final colorIdx = EditorDefaults.defaultColors.indexOf(existing.colorHex);
       if (colorIdx != -1) {
         cindex = colorIdx;
       }
-    }
-    if (widget.font != null) {
-      final fontIdx = EditorDefaults.defaultFonts.indexOf(widget.font!);
+      final fontIdx = EditorDefaults.defaultFonts.indexOf(existing.fontFamily);
       if (fontIdx != -1) {
         findex = fontIdx;
       }
+      _txtcontroller.text = existing.text;
+    } else {
+      _txtcontroller.text = '';
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          widget.controller.addLayerWithoutHistory(
+            TextLayer(
+              id: _layerId,
+              text: '',
+              colorHex: EditorDefaults.defaultColors[cindex],
+              fontFamily: EditorDefaults.defaultFonts[findex],
+            ),
+          );
+        }
+      });
     }
-    _carouselController = CarouselController(initialItem: findex);
 
-    _carouselController.addListener(() {
+    _fontcarouselController = CarouselController(initialItem: findex);
+    _colorcarouselController = CarouselController(initialItem: cindex);
+
+    _fontcarouselController.addListener(() {
       final offsetChunck = context.screenWidth / 7;
-      final index = _carouselController.offset / offsetChunck;
-      setState(() => findex = index.round());
+      final index = _fontcarouselController.offset / offsetChunck;
+      setState(() {
+        findex = index.round();
+        _updateLayer();
+      });
+    });
+    _colorcarouselController.addListener(() {
+      final offsetChunck = context.screenWidth / 7;
+      final index = _colorcarouselController.offset / offsetChunck;
+      setState(() {
+        cindex = index.round();
+        _updateLayer();
+      });
     });
 
-    _txtcontroller.text = widget.data ?? '';
+    _txtcontroller.addListener(_updateLayer);
+
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
-        Navigator.of(context).pop();
+        if (mounted) {
+          final route = ModalRoute.of(context);
+          if (route != null && route.isCurrent) {
+            Navigator.of(context).pop();
+          }
+        }
       }
     });
   }
 
+  void _updateLayer() {
+    final currentLayers = widget.controller.layers;
+    final index = currentLayers.indexWhere((l) => l.id == _layerId);
+    if (index != -1) {
+      final layer = currentLayers[index] as TextLayer;
+      widget.controller.updateLayerWithoutHistory(
+        layer.copyWith(
+          text: _txtcontroller.text,
+          colorHex: EditorDefaults.defaultColors[cindex],
+          fontFamily: EditorDefaults.defaultFonts[findex],
+        ),
+      );
+    } else if (_isNewLayer) {
+      widget.controller.addLayerWithoutHistory(
+        TextLayer(
+          id: _layerId,
+          text: _txtcontroller.text,
+          colorHex: EditorDefaults.defaultColors[cindex],
+          fontFamily: EditorDefaults.defaultFonts[findex],
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
+    _txtcontroller.removeListener(_updateLayer);
     _txtcontroller.dispose();
-    _carouselController.dispose();
+    _fontcarouselController.dispose();
+    _colorcarouselController.dispose();
+    focusNode.dispose();
+
+    final text = _txtcontroller.text.trim();
+    if (text.isEmpty) {
+      widget.controller.removeLayer(_layerId);
+    } else {
+      widget.controller.commitTransformHistory();
+    }
+
     super.dispose();
   }
 
@@ -89,49 +157,33 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            // SizedBox(
-            //   width: MediaQuery.of(context).size.width,
-            //   height: MediaQuery.of(context).size.height * 0.05,
-            //   child: WheelChooser.custom(
-            //     startPosition: 0,
-            //     onValueChanged: (s) => setState(() => cindex = s),
-            //     horizontal: true,
-            //     perspective: 0.00000001,
-            //     children: List.generate(
-            //       colors.length,
-            //       (indx) => Stack(
-            //         alignment: Alignment.center,
-            //         children: [
-            //           Container(
-            //             height: MediaQuery.of(context).size.width * 0.07,
-            //             width: MediaQuery.of(context).size.width * 0.07,
-            //             decoration: BoxDecoration(
-            //               color: (indx == cindex)
-            //                   ? Colors.white54
-            //                   : Colors.black12,
-            //               borderRadius: BorderRadius.circular(100),
-            //             ),
-            //           ),
-            //           Container(
-            //             height: MediaQuery.of(context).size.width * 0.06,
-            //             width: MediaQuery.of(context).size.width * 0.06,
-            //             decoration: BoxDecoration(
-            //               // color: (colors[indx])),
-            //               borderRadius: BorderRadius.circular(100),
-            //             ),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.05,
+              ),
+              child: CarouselView.weighted(
+                controller: _colorcarouselController,
+                flexWeights: const <int>[1, 1, 2, 1, 1, 1],
+                itemSnapping: true,
+                onTap: (value) {
+                  setState(() => cindex = value);
+                  _colorcarouselController.animateToItem(value);
+                },
+                children: colors
+                    .map(
+                      (color) =>
+                          Center(child: Container(color: color.hexToColor)),
+                    )
+                    .toList(),
+              ),
+            ),
             TextField(
               focusNode: focusNode,
               autofocus: true,
               maxLines: null,
               style: TextStyle(
                 fontSize: 30,
-                // color: (colors[cindex])),
+                color: colors[cindex].hexToColor,
                 fontFamily: fonts[findex],
                 package: 'story_editor',
                 decoration: TextDecoration.none,
@@ -164,12 +216,12 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
                 maxHeight: MediaQuery.of(context).size.height * 0.05,
               ),
               child: CarouselView.weighted(
-                controller: _carouselController,
+                controller: _fontcarouselController,
                 flexWeights: const <int>[1, 1, 2, 1, 1, 1],
                 itemSnapping: true,
                 onTap: (value) {
                   setState(() => findex = value);
-                  _carouselController.animateToItem(value);
+                  _fontcarouselController.animateToItem(value);
                 },
                 children: fonts
                     .map(

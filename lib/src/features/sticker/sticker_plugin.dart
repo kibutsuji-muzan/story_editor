@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../core/controllers/story_editor_controller.dart';
 import '../../core/models/editor_layer.dart';
-import '../../features/sticker/sticker_layer.dart';
-import '../../features/sticker/sticker_layer_widget.dart';
+import 'sticker_layer.dart';
+import 'sticker_layer_widget.dart';
 import '../../core/utils/layer_utils.dart';
-import '../editor_plugin.dart';
+import '../../plugins/editor_plugin.dart';
 
 class StickerPlugin extends EditorPlugin {
   const StickerPlugin()

@@ -28,11 +28,26 @@ class StoryEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addLayerWithoutHistory(EditorLayer layer) {
+    final updatedLayers = List<EditorLayer>.from(_state.layers)..add(layer);
+    _state = _state.copyWith(layers: updatedLayers);
+    _selection.selectLayer(layer.id);
+    notifyListeners();
+  }
+
   void updateLayer(EditorLayer layer) {
     final updatedLayers = _state.layers.map((l) {
       return l.id == layer.id ? layer : l;
     }).toList();
     _updateState(_state.copyWith(layers: updatedLayers));
+    notifyListeners();
+  }
+
+  void updateLayerWithoutHistory(EditorLayer layer) {
+    final updatedLayers = _state.layers.map((l) {
+      return l.id == layer.id ? layer : l;
+    }).toList();
+    _state = _state.copyWith(layers: updatedLayers);
     notifyListeners();
   }
 

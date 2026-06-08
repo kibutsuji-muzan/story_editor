@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:story_editor/story_editor.dart';
 import 'package:story_editor/src/features/text/text_editor_sheet.dart';
+import '../../core/services/dismissable_overlay.dart';
 import 'text_layer.dart';
 
 class TextLayerWidget extends StatelessWidget {
@@ -34,9 +36,20 @@ class TextLayerWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
+        final controller = StoryEditorScope.of(context, listen: false);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => TextEditorSheet()),
+          PageRouteBuilder(
+            opaque: false,
+            pageBuilder: (_, __, ___) {
+              return StoryEditorOverlay(
+                child: TextEditorSheet(
+                  controller: controller,
+                  existingLayer: layer,
+                ),
+              );
+            },
+          ),
         );
       },
       child: Text(

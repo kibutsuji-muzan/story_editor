@@ -1,13 +1,12 @@
 import 'package:flutter/widgets.dart';
+import 'package:story_editor/src/features/image/image_plugin.dart';
 
 import 'editor_plugin.dart';
-import 'built_in/emoji_plugin.dart';
-import 'built_in/image_plugin.dart';
-import 'built_in/music_plugin.dart';
-import 'built_in/polls_plugin.dart';
-import 'built_in/sticker_plugin.dart';
-import 'built_in/text_plugin.dart';
-import 'built_in/timer_plugin.dart';
+import '../features/music/music_plugin.dart';
+import '../features/polls/polls_plugin.dart';
+import '../features/sticker/sticker_plugin.dart';
+import '../features/text/text_plugin.dart';
+import '../features/timer/timer_plugin.dart';
 import '../core/models/editor_layer.dart';
 import '../core/controllers/story_editor_controller.dart';
 
@@ -23,13 +22,12 @@ class PluginRegistry {
   factory PluginRegistry.builtIn() {
     return PluginRegistry(
       plugins: const [
-        TextPlugin(),
-        ImagePlugin(),
         StickerPlugin(),
+        ImagePlugin(),
         TimerPlugin(),
         PollsPlugin(),
         MusicPlugin(),
-        EmojiPlugin(),
+        TextPlugin(),
       ],
     );
   }

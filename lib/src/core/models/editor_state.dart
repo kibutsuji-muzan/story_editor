@@ -1,28 +1,26 @@
+import 'package:story_editor/src/core/models/media_source.dart';
+
 import 'editor_layer.dart';
 
 class EditorState {
   final List<EditorLayer> layers;
-  final String? backgroundPath;
-  final bool isVideo;
+  final MediaSource? background;
   final int taggedProductId;
 
   const EditorState({
     this.layers = const [],
-    this.backgroundPath,
-    this.isVideo = false,
+    this.background,
     this.taggedProductId = 0,
   });
 
   EditorState copyWith({
     List<EditorLayer>? layers,
-    String? backgroundPath,
-    bool? isVideo,
+    MediaSource? background,
     int? taggedProductId,
   }) {
     return EditorState(
       layers: layers ?? this.layers,
-      backgroundPath: backgroundPath ?? this.backgroundPath,
-      isVideo: isVideo ?? this.isVideo,
+      background: background ?? this.background,
       taggedProductId: taggedProductId ?? this.taggedProductId,
     );
   }

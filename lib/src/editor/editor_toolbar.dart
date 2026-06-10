@@ -36,6 +36,26 @@ class _EditorToolbarState extends State<EditorToolbar> {
     final controller = StoryEditorScope.of(context);
     final canUndo = controller.history.canUndo;
     final canRedo = controller.history.canRedo;
+    final enabledPlugins = pluginRegistry.plugins.where((plugin) {
+      final config = StoryEditorConfig.instance;
+      switch (plugin.id) {
+        case 'text':
+          return config.enableText;
+        case 'image':
+          return config.enableImage;
+        case 'sticker':
+          return config.enableSticker;
+        case 'timer':
+          return config.enableTimer;
+        case 'polls':
+          return config.enablePolls;
+        case 'music':
+          return config.enableMusic;
+        default:
+          return true;
+      }
+    }).toList();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,22 +95,22 @@ class _EditorToolbarState extends State<EditorToolbar> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        for (int i = 0; i < pluginRegistry.plugins.length; i++)
+                        for (int i = 0; i < enabledPlugins.length; i++)
                           if (i < 5 || showAllTools)
                             _buildIconButton(
-                              icon: pluginRegistry.plugins[i].icon,
-                              onPressed: () => pluginRegistry.plugins[i].onTap(
+                              icon: enabledPlugins[i].icon,
+                              onPressed: () => enabledPlugins[i].onTap(
                                 context,
                                 controller,
                               ),
-                              tooltip: pluginRegistry.plugins[i].name,
+                              tooltip: enabledPlugins[i].name,
                               color: theme.activeIconColor,
                             ),
                       ],
                     ),
                   ),
                 ),
-                if (pluginRegistry.plugins.length > 5)
+                if (enabledPlugins.length > 5)
                   _buildIconButton(
                     size: Size(theme.buttonSize.width, 20),
                     icon: showAllTools

@@ -25,62 +25,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.3"
-  audioplayers:
-    dependency: transitive
-    description:
-      name: audioplayers
-      sha256: "1d0c1b1f2095e59080e2d5046639096417a86687d89778da41b0c9a06d683dfd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.7.0"
-  audioplayers_android:
-    dependency: transitive
-    description:
-      name: audioplayers_android
-      sha256: "60a6728277228413a85755bd3ffd6fab98f6555608923813ce383b190a360605"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.2.1"
-  audioplayers_darwin:
-    dependency: transitive
-    description:
-      name: audioplayers_darwin
-      sha256: c994b3bb3a921e4904ac40e013fbc94488e824fd7c1de6326f549943b0b44a91
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.4.0"
-  audioplayers_linux:
-    dependency: transitive
-    description:
-      name: audioplayers_linux
-      sha256: f75bce1ce864170ef5e6a2c6a61cd3339e1a17ce11e99a25bae4474ea491d001
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.2.1"
-  audioplayers_platform_interface:
-    dependency: transitive
-    description:
-      name: audioplayers_platform_interface
-      sha256: "0e2f6a919ab56d0fec272e801abc07b26ae7f31980f912f24af4748763e5a656"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.1.1"
-  audioplayers_web:
-    dependency: transitive
-    description:
-      name: audioplayers_web
-      sha256: "24a6f258062bd7da8cb2157e83fccb9816a08dd306cbaaa24f9813d071470545"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.2.1"
-  audioplayers_windows:
-    dependency: transitive
-    description:
-      name: audioplayers_windows
-      sha256: "95f875a96c88c3dbbcb608d4f8288e300b0113d256a81d0b3197fcc18f0dc91a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -145,14 +89,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.9"
-  easy_audio_trimmer:
-    dependency: transitive
-    description:
-      name: easy_audio_trimmer
-      sha256: d14bf5217df7660bccfca69df5bf42992b728e4054c9f28a895e1e52be3081c7
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -169,30 +105,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  ffmpeg_kit_flutter_new:
-    dependency: transitive
-    description:
-      name: ffmpeg_kit_flutter_new
-      sha256: d127635f27e93a7f21f0a14ce0a1a148e80919c402dac4a2118d73bfb17ce841
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.0"
-  ffmpeg_kit_flutter_platform_interface:
-    dependency: transitive
-    description:
-      name: ffmpeg_kit_flutter_platform_interface
-      sha256: addf046ae44e190ad0101b2fde2ad909a3cd08a2a109f6106d2f7048b7abedee
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.1"
-  file:
-    dependency: transitive
-    description:
-      name: file
-      sha256: a3b4f84adafef897088c160faf7dfffb7696046cb13ae90b508c2cbc95d3b8d4
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.0.1"
   fixnum:
     dependency: transitive
     description:
@@ -201,35 +113,11 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  flex_color_picker:
-    dependency: transitive
-    description:
-      name: flex_color_picker
-      sha256: a0979dd61f21b634717b98eb4ceaed2bfe009fe020ce8597aaf164b9eeb57aaa
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.8.0"
-  flex_seed_scheme:
-    dependency: transitive
-    description:
-      name: flex_seed_scheme
-      sha256: a3183753bbcfc3af106224bff3ab3e1844b73f58062136b7499919f49f3667e7
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.1"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_archive:
-    dependency: transitive
-    description:
-      name: flutter_archive
-      sha256: e433389fde0bdfc20af40784fdb6d91753794b40cf708a43f95244fcd5d6c298
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.4"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -288,14 +176,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
-  intl:
-    dependency: transitive
-    description:
-      name: intl
-      sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.20.2"
   jni:
     dependency: transitive
     description:
@@ -398,7 +278,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "29a1bf818434c1f8051892c9b537ac6ef217d45d"
-      url: "git@github.com:besttechguru/matrix_gesture_detector.git"
+      url: "git@github.com:kibutsuji-muzan/matrix_gesture_detector.git"
     source: git
     version: "0.2.0-nullsafety"
   meta:
@@ -409,14 +289,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
-  nested:
-    dependency: transitive
-    description:
-      name: nested
-      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   objective_c:
     dependency: transitive
     description:
@@ -505,14 +377,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.2"
-  pinch_scale:
-    dependency: transitive
-    description:
-      name: pinch_scale
-      sha256: e007029036c1b5bbdc4bb5e695801800ca6b23cc29f7301d25699819365dcd9f
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.4"
   platform:
     dependency: transitive
     description:
@@ -529,14 +393,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
-  provider:
-    dependency: transitive
-    description:
-      name: provider
-      sha256: "4e82183fa20e5ca25703ead7e05de9e4cceed1fbd1eadc1ac3cb6f565a09f272"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.1.5+1"
   pub_semver:
     dependency: transitive
     description:
@@ -733,14 +589,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  wheel_chooser:
-    dependency: transitive
-    description:
-      name: wheel_chooser
-      sha256: "3fee36f081f321c58a0b7b4afcdd92599f2ca520b3a1420084774e6b19cca1d8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.2"
   xdg_directories:
     dependency: transitive
     description:

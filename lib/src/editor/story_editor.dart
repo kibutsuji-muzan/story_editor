@@ -3,6 +3,7 @@ import 'package:story_editor/story_editor.dart';
 
 class StoryEditor extends StatelessWidget {
   final StoryEditorController controller;
+  final StoryEditorConfig? config;
   final PluginRegistry? pluginRegistry;
   final VoidCallback? onTapText;
   final VoidCallback? onTapStickers;
@@ -15,6 +16,7 @@ class StoryEditor extends StatelessWidget {
   const StoryEditor({
     super.key,
     required this.controller,
+    this.config,
     this.pluginRegistry,
     this.onTapText,
     this.onTapStickers,
@@ -27,6 +29,9 @@ class StoryEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (config != null) {
+      StoryEditorConfig.instance = config!;
+    }
     final activeRegistry = pluginRegistry ?? PluginRegistry.instance;
 
     return StoryEditorScope(

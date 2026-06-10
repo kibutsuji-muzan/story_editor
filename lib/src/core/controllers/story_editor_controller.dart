@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:story_editor/src/core/models/media_source.dart';
 import '../models/editor_layer.dart';
 import '../models/editor_state.dart';
+import '../models/config.dart';
 import 'history_controller.dart';
 import 'selection_controller.dart';
 
@@ -9,9 +11,8 @@ class StoryEditorController extends ChangeNotifier {
   final SelectionController _selection = SelectionController();
   EditorState _state;
 
-  StoryEditorController({
-    EditorState? initialState,
-  }) : _state = initialState ?? const EditorState() {
+  StoryEditorController({EditorState? initialState})
+    : _state = initialState ?? const EditorState() {
     _history.pushState(_state);
   }
 
@@ -21,7 +22,10 @@ class StoryEditorController extends ChangeNotifier {
   bool get hasSelection => _selection.hasSelection;
   HistoryController get history => _history;
 
+  bool get canAddLayer => _state.layers.length < StoryEditorConfig.instance.maxLayersCount;
+
   void addLayer(EditorLayer layer) {
+    if (!canAddLayer) return;
     final updatedLayers = List<EditorLayer>.from(_state.layers)..add(layer);
     _updateState(_state.copyWith(layers: updatedLayers));
     _selection.selectLayer(layer.id);
@@ -29,6 +33,7 @@ class StoryEditorController extends ChangeNotifier {
   }
 
   void addLayerWithoutHistory(EditorLayer layer) {
+    if (!canAddLayer) return;
     final updatedLayers = List<EditorLayer>.from(_state.layers)..add(layer);
     _state = _state.copyWith(layers: updatedLayers);
     _selection.selectLayer(layer.id);
@@ -92,8 +97,8 @@ class StoryEditorController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setBackground(String path, bool isVideo) {
-    _updateState(_state.copyWith(backgroundPath: path, isVideo: isVideo));
+  void setBackground(MediaSource source) {
+    _updateState(_state.copyWith(background: source));
     notifyListeners();
   }
 

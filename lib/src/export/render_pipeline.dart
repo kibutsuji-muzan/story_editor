@@ -3,6 +3,7 @@ import 'package:path_provider/path_provider.dart';
 import 'image_exporter.dart';
 import 'video_exporter.dart';
 import '../core/models/editor_state.dart';
+import '../core/models/media_source.dart';
 import '../core/services/serialization_service.dart';
 
 class RenderPipeline {
@@ -20,8 +21,10 @@ class RenderPipeline {
 
     try {
       // 2. Export and compress the background media
+      final background = state.background;
+      final isVideo = background?.type == MediaType.video;
       File backgroundFile;
-      if (state.isVideo) {
+      if (isVideo) {
         const exporter = VideoExporter();
         backgroundFile = await exporter.export(
           state,

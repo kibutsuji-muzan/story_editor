@@ -34,6 +34,26 @@ class TextLayerWidget extends StatelessWidget {
       textColor = Color(int.parse('FF$hex', radix: 16));
     } catch (_) {}
 
+    final fontName = layer.fontFamily;
+    final storyFont = StoryEditorConfig.instance.fonts.firstWhere(
+      (f) => f.name == fontName,
+      orElse: () => StoryFont(
+        name: fontName,
+        styleBuilder: (style) => style.copyWith(
+          fontFamily: fontName,
+          package: _isPackageFont(fontName) ? 'story_editor' : null,
+        ),
+      ),
+    );
+
+    final baseStyle = TextStyle(
+      color: textColor,
+      fontSize: 28,
+      fontWeight: FontWeight.bold,
+      decoration: TextDecoration.none,
+    );
+    final textStyle = storyFont.styleBuilder(baseStyle);
+
     return GestureDetector(
       onTap: () {
         final controller = StoryEditorScope.of(context, listen: false);
@@ -55,14 +75,7 @@ class TextLayerWidget extends StatelessWidget {
       child: Text(
         layer.text,
         textAlign: TextAlign.center,
-        style: TextStyle(
-          fontFamily: layer.fontFamily,
-          package: _isPackageFont(layer.fontFamily) ? 'story_editor' : null,
-          color: textColor,
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          decoration: TextDecoration.none,
-        ),
+        style: textStyle,
       ),
     );
   }

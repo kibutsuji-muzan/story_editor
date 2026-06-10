@@ -1,7 +1,9 @@
 // Core Models
+export 'src/core/models/config.dart';
 export 'src/core/models/editor_layer.dart';
 export 'src/core/models/transform_data.dart';
 export 'src/core/models/editor_state.dart';
+export 'src/core/models/media_source.dart';
 export 'src/features/text/text_layer.dart';
 export 'src/features/image/image_layer.dart';
 export 'src/features/sticker/sticker_layer.dart';

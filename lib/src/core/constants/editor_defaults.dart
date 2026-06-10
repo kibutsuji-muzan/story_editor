@@ -1,26 +1,14 @@
-class EditorDefaults {
-  static const List<String> defaultFonts = [
-    'Inter',
-    'BebasNeue',
-    'DancingScript',
-    'AbrilFatface',
-    'ZenTokyoZoo',
-    'RubikGlitchPop',
-    'RubikDoodleShadow',
-    'ProtestRevolution',
-    'ProtestStrike',
-  ];
+import 'package:story_editor/src/core/models/config.dart';
+import 'package:flutter/material.dart';
 
-  static const List<String> defaultColors = [
-    '#FFFFFF',
-    '#000000',
-    '#FF3B30',
-    '#FF9500',
-    '#FFCC00',
-    '#4CD964',
-    '#5AC8FA',
-    '#007AFF',
-    '#5856D6',
-    '#FF2D55',
-  ];
+class TextEditorsChoices {
+  static List<String> get fonts =>
+      StoryEditorConfig.instance.fonts.map((f) => f.name).toList();
+
+  static List<String> get colors =>
+      StoryEditorConfig.instance.colors.map((c) => _colorToHex(c.color)).toList();
+
+  static String _colorToHex(Color color) {
+    return '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+  }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:story_editor/story_editor.dart';
@@ -41,5 +42,17 @@ void main() {
     expect(layers, hasLength(2));
     expect(layers[0], isA<TextLayer>());
     expect(layers[1], isA<StickerLayer>());
+  });
+
+  test('StoryEditorController background state updates', () {
+    final controller = StoryEditorController();
+    expect(controller.state.background, isNull);
+
+    final fileSource = FileMediaSource(File('dummy.mp4'), type: MediaType.video);
+    controller.setBackground(fileSource);
+
+    expect(controller.state.background, fileSource);
+    expect(controller.state.background?.type, MediaType.video);
+    expect(controller.state.background, isA<FileMediaSource>());
   });
 }

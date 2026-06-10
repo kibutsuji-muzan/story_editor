@@ -31,10 +31,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final StoryEditorController _controller = StoryEditorController(
-    initialState: EditorState(
-      backgroundPath: 'assets/chai-p4.jpg',
+    initialState: const EditorState(
+      background: AssetMediaSource('assets/img.jpg', type: MediaType.image),
     ),
   );
+  @override
+  void initState() {
+    StoryEditorConfig.instance = StoryEditorConfig(
+      colors: defaultColors,
+      fonts: defaultFonts,
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,3 +63,61 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+TextStyle _buildInterStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'Inter');
+TextStyle _buildAbrilFatfaceStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'AbrilFatface');
+TextStyle _buildBebasNeueStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'BebasNeue');
+TextStyle _buildDancingScriptStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'DancingScript');
+TextStyle _buildKolkerBrushStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'KolkerBrush');
+TextStyle _buildProtestRevolutionStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'ProtestRevolution');
+TextStyle _buildProtestStrikeStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'ProtestStrike');
+TextStyle _buildRubikDoodleShadowStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'RubikDoodleShadow');
+TextStyle _buildRubikGlitchPopStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'RubikGlitchPop');
+TextStyle _buildZenTokyoZooStyle(TextStyle style) =>
+    style.copyWith(fontFamily: 'ZenTokyoZoo');
+
+const List<StoryColor> defaultColors = [
+  StoryColor(name: 'White', color: Colors.white),
+  StoryColor(name: 'Black', color: Colors.black),
+  StoryColor(name: 'Red', color: Color.fromARGB(255, 255, 75, 75)),
+  StoryColor(name: 'Orange', color: Color.fromARGB(255, 255, 159, 67)),
+  StoryColor(name: 'Yellow', color: Color.fromARGB(255, 255, 225, 64)),
+  StoryColor(name: 'Green', color: Color.fromARGB(255, 43, 236, 106)),
+  StoryColor(name: 'Teal', color: Color.fromARGB(255, 0, 210, 211)),
+  StoryColor(name: 'Blue', color: Color.fromARGB(255, 84, 160, 255)),
+  StoryColor(name: 'Indigo', color: Color.fromARGB(255, 95, 39, 205)),
+  StoryColor(name: 'Purple', color: Color.fromARGB(255, 140, 54, 255)),
+  StoryColor(name: 'Pink', color: Color.fromARGB(255, 255, 82, 82)),
+];
+
+const List<StoryFont> defaultFonts = [
+  StoryFont(name: 'Inter', styleBuilder: _buildInterStyle),
+  StoryFont(name: 'AbrilFatface', styleBuilder: _buildAbrilFatfaceStyle),
+  StoryFont(name: 'BebasNeue', styleBuilder: _buildBebasNeueStyle),
+  StoryFont(name: 'DancingScript', styleBuilder: _buildDancingScriptStyle),
+  StoryFont(name: 'KolkerBrush', styleBuilder: _buildKolkerBrushStyle),
+  StoryFont(
+    name: 'ProtestRevolution',
+    styleBuilder: _buildProtestRevolutionStyle,
+  ),
+  StoryFont(
+    name: 'ProtestStrike',
+    styleBuilder: _buildProtestStrikeStyle,
+    textToShow: 'ProtestStrike',
+  ),
+  StoryFont(
+    name: 'RubikDoodleShadow',
+    styleBuilder: _buildRubikDoodleShadowStyle,
+  ),
+  StoryFont(name: 'RubikGlitchPop', styleBuilder: _buildRubikGlitchPopStyle),
+  StoryFont(name: 'ZenTokyoZoo', styleBuilder: _buildZenTokyoZooStyle),
+];

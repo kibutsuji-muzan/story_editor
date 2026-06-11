@@ -25,7 +25,7 @@ class ToolbarTheme {
     this.barBorderRadius = const BorderRadius.all(Radius.circular(100)),
     this.barMaxHeightFactor = 0.6,
     this.blurSigma = 1.0,
-    this.animationDuration = const Duration(milliseconds: 500),
+    this.animationDuration = const Duration(milliseconds: 100),
     this.buttonSize = const Size(35, 35),
     this.buttonBackgroundColor = Colors.white,
     this.buttonDisabledBackgroundColor = Colors.white,

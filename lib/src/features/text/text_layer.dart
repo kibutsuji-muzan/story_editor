@@ -1,18 +1,20 @@
+import 'package:flutter/material.dart';
 import '../../core/models/editor_layer.dart';
 import '../../core/models/transform_data.dart';
 
 class TextLayer extends EditorLayer {
   final String text;
   final String fontFamily;
-  final String colorHex;
+  final Color color;
 
   TextLayer({
     required super.id,
     super.transform,
     required this.text,
     this.fontFamily = 'Inter',
-    this.colorHex = '#FFFFFF',
-  }) : super(type: LayerType.text);
+    Color? color,
+  }) : color = color ?? const Color(0xFFFFFFFF),
+       super(type: LayerType.text);
 
   @override
   TextLayer copyWith({
@@ -20,14 +22,14 @@ class TextLayer extends EditorLayer {
     TransformData? transform,
     String? text,
     String? fontFamily,
-    String? colorHex,
+    Color? color,
   }) {
     return TextLayer(
       id: id ?? this.id,
       transform: transform ?? this.transform,
       text: text ?? this.text,
       fontFamily: fontFamily ?? this.fontFamily,
-      colorHex: colorHex ?? this.colorHex,
+      color: color ?? this.color,
     );
   }
 
@@ -37,7 +39,7 @@ class TextLayer extends EditorLayer {
       'widget': 'text',
       'key': id,
       'font': fontFamily,
-      'color': colorHex,
+      'color': color.value,
       'data': text,
       'position': transform.toList(),
     };
@@ -51,7 +53,7 @@ class TextLayer extends EditorLayer {
           : TransformData(),
       text: json['data']?.toString() ?? '',
       fontFamily: json['font']?.toString() ?? 'Inter',
-      colorHex: json['color']?.toString() ?? '#FFFFFF',
+      color: json['color'] != null ? Color(json['color'] as int) : null,
     );
   }
 }

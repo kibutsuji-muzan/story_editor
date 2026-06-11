@@ -41,8 +41,8 @@ class _LayerFrameState extends State<LayerFrame> {
     final storage = matrix.storage;
     return math.sqrt(
       storage[0] * storage[0] +
-      storage[1] * storage[1] +
-      storage[2] * storage[2],
+          storage[1] * storage[1] +
+          storage[2] * storage[2],
     );
   }
 
@@ -62,7 +62,9 @@ class _LayerFrameState extends State<LayerFrame> {
         final maxScale = StoryEditorConfig.instance.maxScaleFactor;
 
         final clampedScale = targetScale.clamp(minScale, maxScale);
-        final adjustedDeltaScale = currentScale > 0 ? clampedScale / currentScale : 1.0;
+        final adjustedDeltaScale = currentScale > 0
+            ? clampedScale / currentScale
+            : 1.0;
 
         final adjustedSm = Matrix4.identity()..scale(adjustedDeltaScale);
 
@@ -81,59 +83,29 @@ class _LayerFrameState extends State<LayerFrame> {
       },
       onScaleEnd: () {
         controller.commitTransformHistory();
+        controller.deselect();
       },
-      child: GestureDetector(
-        onTap: () {
-          controller.selectLayer(widget.layer.id);
-        },
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: isSelected
-                  ? Colors.blue.withValues(alpha: 0.8)
-                  : Colors.transparent,
-              width: 1.5,
-            ),
-            borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected
+                ? Colors.blue.withValues(alpha: 0.8)
+                : Colors.transparent,
+            width: 1.5,
           ),
-          child: widget.child,
+          borderRadius: BorderRadius.circular(8),
         ),
+        child: widget.child,
       ),
     );
 
     return AnimatedBuilder(
       animation: _matrixNotifier,
       builder: (context, child) {
-        return Transform(
-          transform: _matrixNotifier.value,
-          child: child,
-        );
+        return Transform(transform: _matrixNotifier.value, child: child);
       },
       child: gestureDetector,
     );
   }
 }
- // Quick delete button on top-right of the frame
-                  // if (isSelected)
-                  //   Positioned(
-                  //     top: -12,
-                  //     right: -12,
-                  //     child: GestureDetector(
-                  //       onTap: () {
-                  //         controller.removeLayer(widget.layer.id);
-                  //       },
-                  //       child: Container(
-                  //         padding: const EdgeInsets.all(4),
-                  //         decoration: const BoxDecoration(
-                  //           color: Colors.red,
-                  //           shape: BoxShape.circle,
-                  //         ),
-                  //         child: const Icon(
-                  //           Icons.close,
-                  //           color: Colors.white,
-                  //           size: 14,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),

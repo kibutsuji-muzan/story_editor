@@ -21,8 +21,17 @@ class StoryEditorController extends ChangeNotifier {
   String? get selectedLayerId => _selection.selectedLayerId;
   bool get hasSelection => _selection.hasSelection;
   HistoryController get history => _history;
+  EditorLayer? get selectedLayer {
+    if (_selection.hasSelection) {
+      return _state.layers.firstWhere(
+        (l) => l.id == _selection.selectedLayerId,
+      );
+    }
+    return null;
+  }
 
-  bool get canAddLayer => _state.layers.length < StoryEditorConfig.instance.maxLayersCount;
+  bool get canAddLayer =>
+      _state.layers.length < StoryEditorConfig.instance.maxLayersCount;
 
   void addLayer(EditorLayer layer) {
     if (!canAddLayer) return;

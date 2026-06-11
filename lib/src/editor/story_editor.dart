@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:story_editor/src/widgets/trash_can.dart';
 import 'package:story_editor/story_editor.dart';
 
 class StoryEditor extends StatelessWidget {
@@ -52,7 +53,7 @@ class StoryEditor extends StatelessWidget {
                 right: 10,
                 child: EditorToolbar(onTapClose: onTapClose),
               ),
-
+              TrashCan(),
               // Product Tag Indicator at Bottom Left
               // Consumer<StoryEditorController>(
               //   builder: (context, controller, child) {

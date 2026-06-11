@@ -20,7 +20,7 @@ class StoryColor extends StoryConfig {
   const StoryColor({required this.color, required super.name});
 }
 
-TextStyle _buildInterStyle(TextStyle style) => style.copyWith();
+TextStyle _buildStyle(TextStyle style) => style;
 
 class StoryEditorConfig {
   final List<StoryFont> fonts;
@@ -67,6 +67,6 @@ class StoryEditorConfig {
   ];
 
   static const List<StoryFont> defaultFonts = [
-    StoryFont(name: 'Inter', styleBuilder: _buildInterStyle),
+    StoryFont(name: 'Inter', styleBuilder: _buildStyle),
   ];
 }

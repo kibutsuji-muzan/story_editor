@@ -43,11 +43,11 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
 
     if (!_isNewLayer) {
       final existing = widget.existingLayer!;
-      final colorIdx = TextEditorsChoices.colors.indexOf(existing.colorHex);
+      final colorIdx = TextEditorsChoices.colors.indexWhere((c) => c.color.value == existing.color.value);
       if (colorIdx != -1) {
         cindex = colorIdx;
       }
-      final fontIdx = TextEditorsChoices.fonts.indexOf(existing.fontFamily);
+      final fontIdx = TextEditorsChoices.fonts.indexWhere((f) => f.name == existing.fontFamily);
       if (fontIdx != -1) {
         findex = fontIdx;
       }
@@ -60,8 +60,8 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
             TextLayer(
               id: _layerId,
               text: '',
-              colorHex: TextEditorsChoices.colors[cindex],
-              fontFamily: TextEditorsChoices.fonts[findex],
+              color: TextEditorsChoices.colors[cindex].color,
+              fontFamily: TextEditorsChoices.fonts[findex].name,
             ),
           );
         }
@@ -74,18 +74,34 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
     _fontcarouselController.addListener(() {
       final offsetChunck = context.screenWidth / 7;
       final index = _fontcarouselController.offset / offsetChunck;
-      setState(() {
-        findex = index.round();
-        _updateLayer();
-      });
+      if (TextEditorsChoices.fonts.isNotEmpty) {
+        final newIndex = index.round().clamp(
+          0,
+          TextEditorsChoices.fonts.length - 1,
+        );
+        if (newIndex != findex) {
+          setState(() {
+            findex = newIndex;
+            _updateLayer();
+          });
+        }
+      }
     });
     _colorcarouselController.addListener(() {
       final offsetChunck = context.screenWidth / 7;
       final index = _colorcarouselController.offset / offsetChunck;
-      setState(() {
-        cindex = index.round();
-        _updateLayer();
-      });
+      if (TextEditorsChoices.colors.isNotEmpty) {
+        final newIndex = index.round().clamp(
+          0,
+          TextEditorsChoices.colors.length - 1,
+        );
+        if (newIndex != cindex) {
+          setState(() {
+            cindex = newIndex;
+            _updateLayer();
+          });
+        }
+      }
     });
 
     _txtcontroller.addListener(_updateLayer);
@@ -110,8 +126,8 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
       widget.controller.updateLayerWithoutHistory(
         layer.copyWith(
           text: _txtcontroller.text,
-          colorHex: TextEditorsChoices.colors[cindex],
-          fontFamily: TextEditorsChoices.fonts[findex],
+          color: TextEditorsChoices.colors[cindex].color,
+          fontFamily: TextEditorsChoices.fonts[findex].name,
         ),
       );
     } else if (_isNewLayer) {
@@ -119,8 +135,8 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
         TextLayer(
           id: _layerId,
           text: _txtcontroller.text,
-          colorHex: TextEditorsChoices.colors[cindex],
-          fontFamily: TextEditorsChoices.fonts[findex],
+          color: TextEditorsChoices.colors[cindex].color,
+          fontFamily: TextEditorsChoices.fonts[findex].name,
         ),
       );
     }
@@ -144,41 +160,22 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
     super.dispose();
   }
 
-  bool _isPackageFont(String fontFamily) {
-    const packageFonts = {
-      'Inter',
-      'AbrilFatface',
-      'BebasNeue',
-      'DancingScript',
-      'KolkerBrush',
-      'ProtestRevolution',
-      'ProtestStrike',
-      'RubikDoodleShadow',
-      'RubikGlitchPop',
-      'ZenTokyoZoo',
-    };
-    return packageFonts.contains(fontFamily);
-  }
-
   @override
   Widget build(BuildContext context) {
     final fonts = TextEditorsChoices.fonts;
     final colors = TextEditorsChoices.colors;
 
-    final fontName = fonts.isNotEmpty ? fonts[findex] : '';
+    final fontName = fonts.isNotEmpty ? fonts[findex].name : '';
     final storyFont = StoryEditorConfig.instance.fonts.firstWhere(
       (f) => f.name == fontName,
       orElse: () => StoryFont(
         name: fontName,
-        styleBuilder: (style) => style.copyWith(
-          fontFamily: fontName,
-          package: _isPackageFont(fontName) ? 'story_editor' : null,
-        ),
+        styleBuilder: (style) => style.copyWith(fontFamily: fontName),
       ),
     );
     final baseStyle = TextStyle(
       fontSize: 30,
-      color: colors.isNotEmpty ? colors[cindex].hexToColor : Colors.white,
+      color: colors.isNotEmpty ? colors[cindex].color : Colors.white,
       decoration: TextDecoration.none,
       decorationColor: const Color.fromRGBO(0, 0, 0, 0),
     );
@@ -207,35 +204,49 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
                 },
                 children: colors
                     .map(
-                      (color) =>
-                          Center(child: Container(color: color.hexToColor)),
+                      (e) => DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: e.color,
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: colors[cindex].name == e.name ? 2 : 0,
+                          ),
+                        ),
+                      ),
                     )
                     .toList(),
               ),
             ),
-            TextField(
-              focusNode: focusNode,
-              autofocus: true,
-              maxLines: null,
-              style: textFieldStyle,
-              keyboardType: TextInputType.text,
-              onSubmitted: (value) {},
-              textAlign: TextAlign.center,
-              controller: _txtcontroller,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: const Color.fromRGBO(0, 0, 0, 0),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(style: BorderStyle.none),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(style: BorderStyle.none),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 10,
+            Hero(
+              tag: _layerId,
+              child: Material(
+                color: Colors.transparent,
+                child: TextField(
+                  focusNode: focusNode,
+                  autofocus: true,
+                  maxLines: null,
+                  style: textFieldStyle,
+                  keyboardType: TextInputType.text,
+                  onSubmitted: (value) {},
+                  textAlign: TextAlign.center,
+                  controller: _txtcontroller,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color.fromRGBO(0, 0, 0, 0),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(style: BorderStyle.none),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(style: BorderStyle.none),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 10,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -253,16 +264,15 @@ class _TextEditorSheetState extends State<TextEditorSheet> {
                 },
                 children: fonts.map((font) {
                   final isSelected = fonts.indexOf(font) == findex;
-                  final fontStoryFont = StoryEditorConfig.instance.fonts.firstWhere(
-                    (f) => f.name == font,
-                    orElse: () => StoryFont(
-                      name: font,
-                      styleBuilder: (style) => style.copyWith(
-                        fontFamily: font,
-                        package: _isPackageFont(font) ? 'story_editor' : null,
-                      ),
-                    ),
-                  );
+                  final fontStoryFont = StoryEditorConfig.instance.fonts
+                      .firstWhere(
+                        (f) => f.name == font.name,
+                        orElse: () => StoryFont(
+                          name: font.name,
+                          styleBuilder: (style) =>
+                              style.copyWith(fontFamily: font.name),
+                        ),
+                      );
                   final basePreviewStyle = TextStyle(
                     fontSize: isSelected ? 22 : 20,
                     color: isSelected ? Colors.black : Colors.black87,

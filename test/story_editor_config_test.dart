@@ -65,8 +65,8 @@ void main() {
       colors: [customColor],
     );
 
-    expect(TextEditorsChoices.fonts, ['CustomFont']);
-    expect(TextEditorsChoices.colors, ['#FF0000']);
+    expect(TextEditorsChoices.fonts, [customFont]);
+    expect(TextEditorsChoices.colors, [customColor]);
   });
 
   testWidgets('StoryEditor config parameter updates global singleton', (tester) async {

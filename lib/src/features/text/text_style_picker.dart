@@ -21,7 +21,12 @@ class _TextStylePickerState extends State<TextStylePicker> {
     _carouselController.addListener(() {
       final offsetChunck = context.screenWidth / 7;
       final index = _carouselController.offset / offsetChunck;
-      setState(() => this.index = index.round());
+      if (widget.list.isNotEmpty) {
+        final newIndex = index.round().clamp(0, widget.list.length - 1);
+        if (newIndex != this.index) {
+          setState(() => this.index = newIndex);
+        }
+      }
     });
   }
 

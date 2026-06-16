@@ -92,6 +92,7 @@ class StoryEditorController extends ChangeNotifier {
   }
 
   void selectLayer(String id) {
+    if (_selection.selectedLayerId == id) return;
     _selection.selectLayer(id);
     notifyListeners();
   }

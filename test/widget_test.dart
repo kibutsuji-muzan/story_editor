@@ -29,4 +29,33 @@ void main() {
     // Verify callback was triggered
     expect(closeTapped, isTrue);
   });
+
+  testWidgets('Dragging layer near trash can removes it on release', (WidgetTester tester) async {
+    final controller = StoryEditorController();
+    controller.addLayer(TextLayer(id: 'text_1', text: 'Drag Me'));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: StoryEditor(
+          controller: controller,
+        ),
+      ),
+    );
+
+    expect(controller.layers.length, 1);
+
+    // Find the layer
+    final textFinder = find.text('Drag Me');
+    expect(textFinder, findsOneWidget);
+
+    // Drag the layer to the bottom center (trash can location)
+    // The screen size is 800x600 by default in tests.
+    // We drag it from its initial center to the bottom center.
+    final firstLocation = tester.getCenter(textFinder);
+    await tester.drag(textFinder, Offset(0.0, 250.0));
+    await tester.pumpAndSettle();
+
+    // The layer should be removed from the controller on release
+    expect(controller.layers.length, 0);
+  });
 }

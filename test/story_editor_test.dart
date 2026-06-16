@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:story_editor/extensions/matrix_extension.dart';
 import 'package:story_editor/story_editor.dart';
+import 'package:vector_math/vector_math_64.dart';
 
 void main() {
   test('TransformData initialization', () {
@@ -54,5 +57,23 @@ void main() {
     expect(controller.state.background, fileSource);
     expect(controller.state.background?.type, MediaType.video);
     expect(controller.state.background, isA<FileMediaSource>());
+  });
+
+  test('Matrix4Extension copyWithScaleAndTranslation helper', () {
+    final matrix = Matrix4.identity()
+      ..translate(10.0, 20.0)
+      ..rotateZ(0.5)
+      ..scale(2.0, 3.0);
+
+    final modified = matrix.copyWithScaleAndTranslation(
+      targetScaleX: 0.5,
+      targetScaleY: 0.6,
+      targetOffset: const Offset(100.0, 200.0),
+    );
+
+    expect(modified.offset, const Offset(100.0, 200.0));
+    expect(modified.scaleX, closeTo(0.5, 1e-5));
+    expect(modified.scaleY, closeTo(0.6, 1e-5));
+    expect(modified.rotation, closeTo(0.5, 1e-5));
   });
 }

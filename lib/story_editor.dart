@@ -28,6 +28,7 @@ export 'src/core/constants/editor_limits.dart';
 export 'src/core/utils/matrix_utils.dart';
 export 'src/core/utils/export_utils.dart';
 export 'src/core/utils/layer_utils.dart';
+export 'src/core/utils/layer_frame_metrics.dart';
 
 // Main Editor Viewport & Widgets
 export 'src/editor/story_editor.dart';
